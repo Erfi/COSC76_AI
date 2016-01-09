@@ -7,7 +7,7 @@ import java.util.Arrays;
 // for the first part of the assignment, you might not extend UUSearchProblem,
 //  since UUSearchProblem is incomplete until you finish it.
 
-public class CannibalProblem extends UUSearchProblem {
+public class CannibalProblem /* extends UUSearchProblem */ {
 
     // the following are the only instance variables you should need.
     //  (some others might be inherited from UUSearchProblem, but worry
@@ -15,6 +15,8 @@ public class CannibalProblem extends UUSearchProblem {
 
     private int goalm, goalc, goalb;
     private int totalMissionaries, totalCannibals;
+    private CannibalNode startNode; // TEST : take out! there is one in UUSearchProblem
+
 
     public CannibalProblem(int sm, int sc, int sb, int gm, int gc, int gb) {
         // I (djb) wrote the constructor; nothing for you to do here.
@@ -30,7 +32,7 @@ public class CannibalProblem extends UUSearchProblem {
     //====================Private CannibalNode Class========================
     // node class used by searches.  Searches themselves are implemented
     //  in UUSearchProblem.
-    private class CannibalNode implements UUSearchNode {
+    private class CannibalNode /* implements UUSearchNode */{
 
         // do not change BOAT_SIZE without considering how it affect
         // getSuccessors.
@@ -55,7 +57,7 @@ public class CannibalProblem extends UUSearchProblem {
 
         }
 
-        public ArrayList<UUSearchNode> getSuccessors() {
+        public ArrayList<CannibalNode/*UUSearchNode*/> getSuccessors() {
             // add actions (denoted by how many missionaries and cannibals to put
             // in the boat) to current state.
 
@@ -71,7 +73,7 @@ public class CannibalProblem extends UUSearchProblem {
 
 
 
-            ArrayList<UUSearchNode> successors = new ArrayList<UUSearchNode>();//this will be returned
+            ArrayList<CannibalNode/*UUSearchNode*/> successors = new ArrayList<CannibalNode /*UUSearchNode*/>();//this will be returned
             ArrayList<CannibalNode> helper = new ArrayList<CannibalNode>();
 
             if (this.state[2]==1){ //if the boat is on the starting shore
@@ -105,9 +107,9 @@ public class CannibalProblem extends UUSearchProblem {
          */
         private boolean isFeasibleState(int[] state){
             if((state[0] <= totalMissionaries && state[0] >= 0)&&(state[1] <= totalCannibals && state[1] >= 0)) {
-                return True;
+                return true;
             }
-            return False;
+            return false;
         }
 
         /*
@@ -120,14 +122,14 @@ public class CannibalProblem extends UUSearchProblem {
             stateOtherSide[1] = totalCannibals - state[1];
             stateOtherSide[2] = state[2]==0 ? 1 : 0;
 
-            if((state[0] < state[1]) || (stateOtherSide[0] < stateOtherSide[1])) {
-                return False;
+            if((state[0] < state[1]) && state[0] >0 || (stateOtherSide[0] < stateOtherSide[1]) && stateOtherSide[0] > 0) {
+                return false;
             }else{
-                return True;
+                return true;
             }
         }
 
-        @Override
+        /*@Override*/
         public boolean goalTest() {
             // you write this method.  (It should be only one line long.
             return (this.state[0]==goalm && this.state[1]==goalc && this.state[2]==goalb);
@@ -159,13 +161,13 @@ public class CannibalProblem extends UUSearchProblem {
 //            System.out.println("| Depth = " + this.depth + " |");
 //            System.out.println(" ----------- ");
 
-            return " ----------- \n" + "|  <" + this.state[0] + "," + this.state[1] + "," + this.state[2] + ">  |\n" + "| Depth = " + this.depth + " |\n" + " ----------- \n";
+            return "\n ----------- \n" + "|  <" + this.state[0] + "," + this.state[1] + "," + this.state[2] + ">  |\n" + "| Depth = " + this.depth + " |\n" + " ----------- \n";
         }
 
 
         // You might need this method when you start writing
         // (and debugging) UUSearchProblem.
-        @Override
+        /*@Override*/
         public int getDepth() {
             return depth;
         }
@@ -175,7 +177,20 @@ public class CannibalProblem extends UUSearchProblem {
     //===============End of CannibalNode class===================
 
     public static void main(String[] args){
-        System.out.println("CannibalProblem class");
+
+        System.out.println("====Testing CannibalProblem class====");
+
+        CannibalProblem cp = new CannibalProblem(3,3,1,0,0,0); // start: (3,3,1)
+        System.out.println(cp.startNode);
+        System.out.println(cp.startNode.getDepth());
+        System.out.println(cp.startNode.hashCode());
+        System.out.println(cp.startNode.equals(cp.startNode));
+        System.out.println(cp.startNode.goalTest());
+        System.out.println(cp.startNode.getSuccessors().get(0).getSuccessors().get(1).getSuccessors());
+
+
+
+
     }
 
 

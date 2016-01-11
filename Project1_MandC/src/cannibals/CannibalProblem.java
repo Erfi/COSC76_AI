@@ -1,5 +1,7 @@
 package cannibals;
 
+import com.sun.org.apache.bcel.internal.util.ClassQueue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -7,7 +9,7 @@ import java.util.Arrays;
 // for the first part of the assignment, you might not extend UUSearchProblem,
 //  since UUSearchProblem is incomplete until you finish it.
 
-public class CannibalProblem /* extends UUSearchProblem */ {
+public class CannibalProblem  extends UUSearchProblem {
 
     // the following are the only instance variables you should need.
     //  (some others might be inherited from UUSearchProblem, but worry
@@ -15,7 +17,7 @@ public class CannibalProblem /* extends UUSearchProblem */ {
 
     private int goalm, goalc, goalb;
     private int totalMissionaries, totalCannibals;
-    private CannibalNode startNode; // TEST : take out! there is one in UUSearchProblem
+//    private CannibalNode startNode; // TEST : take out! there is one in UUSearchProblem
 
 
     public CannibalProblem(int sm, int sc, int sb, int gm, int gc, int gb) {
@@ -27,12 +29,11 @@ public class CannibalProblem /* extends UUSearchProblem */ {
         goalb = gb;
         totalMissionaries = sm;
         totalCannibals = sc;
-
     }
     //====================Private CannibalNode Class========================
     // node class used by searches.  Searches themselves are implemented
     //  in UUSearchProblem.
-    private class CannibalNode /* implements UUSearchNode */{
+    private class CannibalNode implements UUSearchNode {
 
         // do not change BOAT_SIZE without considering how it affect
         // getSuccessors.
@@ -47,6 +48,7 @@ public class CannibalProblem /* extends UUSearchProblem */ {
         //  for search, but useful information for debugging, and for comparing paths
         private int depth;
 
+
         public CannibalNode(int m, int c, int b, int d) {
             state = new int[3];
             this.state[0] = m;
@@ -57,7 +59,7 @@ public class CannibalProblem /* extends UUSearchProblem */ {
 
         }
 
-        public ArrayList<CannibalNode/*UUSearchNode*/> getSuccessors() {
+        public ArrayList<UUSearchNode> getSuccessors() {
             // add actions (denoted by how many missionaries and cannibals to put
             // in the boat) to current state.
 
@@ -73,7 +75,7 @@ public class CannibalProblem /* extends UUSearchProblem */ {
 
 
 
-            ArrayList<CannibalNode/*UUSearchNode*/> successors = new ArrayList<CannibalNode /*UUSearchNode*/>();//this will be returned
+            ArrayList<UUSearchNode> successors = new ArrayList<UUSearchNode>();//this will be returned
             ArrayList<CannibalNode> helper = new ArrayList<CannibalNode>();
 
             if (this.state[2]==1){ //if the boat is on the starting shore
@@ -146,7 +148,7 @@ public class CannibalProblem /* extends UUSearchProblem */ {
 
         @Override
         public int hashCode() {
-            return state[0] * 100 + state[1] * 10 + state[0];
+            return state[0] * 100 + state[1] * 10 + state[2]; //Changed from : state[0] * 100 + state[1] * 10 + state[0]
         }
 
         @Override
@@ -181,17 +183,16 @@ public class CannibalProblem /* extends UUSearchProblem */ {
         System.out.println("====Testing CannibalProblem class====");
 
         CannibalProblem cp = new CannibalProblem(3,3,1,0,0,0); // start: (3,3,1)
-        System.out.println(cp.startNode);
-        System.out.println(cp.startNode.getDepth());
-        System.out.println(cp.startNode.hashCode());
-        System.out.println(cp.startNode.equals(cp.startNode));
-        System.out.println(cp.startNode.goalTest());
-        System.out.println(cp.startNode.getSuccessors().get(0).getSuccessors().get(1).getSuccessors());
-
-
+//        CannibalProblem cp2 = new CannibalProblem(3,3,1,0,0,0); // start (3,2,1)
+//        System.out.println(cp.startNode);
+////        System.out.println(cp.startNode.getDepth());
+////        System.out.println(cp.startNode.hashCode());
+////        System.out.println(cp.startNode.equals(cp.startNode));
+////        System.out.println(cp.startNode.equals(cp2.startNode));
+//
+////        System.out.println(cp.startNode.goalTest());
+//        System.out.println(cp.startNode.getSuccessors().get(2).getSuccessors());
 
 
     }
-
-
 }

@@ -88,24 +88,51 @@ public abstract class UUSearchProblem {
         return path; //this path is from goal to the start reverse it if you want it to be from start to goal (u can use a stack)
 	}
 
-//	public List<UUSearchNode> depthFirstMemoizingSearch(int maxDepth) {
-//		resetStats();
-//		// You will write this method
-//
-//	}
+	public List<UUSearchNode> depthFirstMemoizingSearch(int maxDepth) {
+		resetStats();
+		// You will write this method
+        HashSet<UUSearchNode> visited = new HashSet<UUSearchNode>();
+        return dfsrm(startNode, visited, 0, maxDepth);
+	}
 
-	// recursive memoizing dfs. Private, because it has the extra
-	// parameters needed for recursion.
-//	private List<UUSearchNode> dfsrm(UUSearchNode currentNode, HashMap<UUSearchNode, Integer> visited,
-//			int depth, int maxDepth) {
-//
-//		// keep track of stats; these calls charge for the current node
-//		updateMemory(visited.size());
-//		incrementNodeCount();
-//
-//		// you write this method.  Comments *must* clearly show the
-//		//  "base case" and "recursive case" that any recursive function has.
-//	}
+//	 recursive memoizing dfs. Private, because it has the extra
+//	 parameters needed for recursion.
+	private List<UUSearchNode> dfsrm(UUSearchNode currentNode, HashSet<UUSearchNode> visited,
+			int depth, int maxDepth) {
+
+		// keep track of stats; these calls charge for the current node
+		updateMemory(visited.size());
+		incrementNodeCount();
+
+		// you write this method.  Comments *must* clearly show the
+		//  "base case" and "recursive case" that any recursive function has.
+        List<UUSearchNode> path = null;
+        visited.add(currentNode); //mark the current node as visited
+        if(currentNode.goalTest()){ //if the current node is the goal (basecase 1)
+            path = new ArrayList<UUSearchNode>();
+            path.add(currentNode);
+            return path;
+        }else if(depth > maxDepth){ //if we have reached the cutoff depth (basecase 2)
+            System.out.println("Exceeded Maximum depth of " + maxDepth + " with NO RESULT");
+            return null;
+        }else{ // (recursive case)
+            //getting current nodes children
+            ArrayList<UUSearchNode> children = currentNode.getSuccessors();
+            for (UUSearchNode child : children){
+                // if not yet visited then visit it!
+                if(!visited.contains(child)) {
+                    path = dfsrm(child, visited, depth + 1, maxDepth);
+                    if(path == null){// failure or cutoff
+                        return null;
+                    }else{ //we have found the goal add currentNode to the path and pass it on!
+                        path.add(currentNode);
+                        return path;
+                    }
+                }
+            }
+            return null;
+        }
+	}
 
 
 	// set up the iterative deepening search, and make use of dfspc

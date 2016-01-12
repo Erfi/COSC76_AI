@@ -12,27 +12,27 @@ public class CannibalDriver {
 
 
 		// set up the "standard" 331 problem:
-		CannibalProblem mcProblem = new CannibalProblem(3, 3, 1, 0, 0, 0);
+		CannibalProblem mcProblem = new CannibalProblem(8, 5, 1, 0, 0, 0);
 
 		List<UUSearchProblem.UUSearchNode> path;
 
 
-//		path = mcProblem.breadthFirstSearch();
-//		System.out.println("bfs path length:  " + path.size() + " " + path);
-//		mcProblem.printStats();
-//		System.out.println("--------");
+		path = mcProblem.breadthFirstSearch();
+		System.out.println("bfs path length:  " + path.size()/* + " " + path*/);
+		mcProblem.printStats();
+		System.out.println("--------");
 
 
-//		path = mcProblem.depthFirstMemoizingSearch(MAXDEPTH);
-//		System.out.println("dfs memoizing path length:" + path.size());
-//		mcProblem.printStats();
+		path = mcProblem.depthFirstMemoizingSearch(MAXDEPTH);
+		System.out.println("dfs memoizing path length:" + path.size());
+		mcProblem.printStats();
 //		System.out.println(path);
-//		System.out.println("--------");
+		System.out.println("--------");
 
 
-//		path = mcProblem.depthFirstPathCheckingSearch(MAXDEPTH);
-//		System.out.println("dfs path checking path length:" + path.size());
-//		mcProblem.printStats();
+		path = mcProblem.depthFirstPathCheckingSearch(MAXDEPTH);
+		System.out.println("dfs path checking path length:" + path.size());
+		mcProblem.printStats();
 //        System.out.println(path);
 //
 //

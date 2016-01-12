@@ -55,6 +55,10 @@ public abstract class UUSearchProblem {
             relations.put(startNode, null);
 
             while(!frontier.isEmpty()){
+                // keep track of stats; these calls charge for the current node
+                updateMemory(explored.size());
+                incrementNodeCount();
+
                 UUSearchNode n = frontier.poll();//pop
                 explored.add(n);
 
@@ -113,7 +117,7 @@ public abstract class UUSearchProblem {
             path.add(currentNode);
             return path;
         }else if(depth > maxDepth){ //if we have reached the cutoff depth (basecase 2)
-            System.out.println("Exceeded Maximum depth of " + maxDepth + " with NO RESULT");
+//            System.out.println("Exceeded Maximum depth of " + maxDepth + " with NO RESULT");
             return null;
         }else{ // (recursive case)
             //getting current nodes children
@@ -145,20 +149,16 @@ public abstract class UUSearchProblem {
                 return path;
             }
         }
-        return null; 
+        return null;
 	}
 
 	// set up the depth-first-search (path-checking version),
 	//  but call dfspc to do the real work
 	public List<UUSearchNode> depthFirstPathCheckingSearch(int maxDepth) {
 		resetStats();
-
 		// I wrote this method for you.  Nothing to do.
-
 		HashSet<UUSearchNode> currentPath = new HashSet<UUSearchNode>();
-
 		return dfsrpc(startNode, currentPath, 0, maxDepth);
-
 	}
 
 	// recursive path-checking dfs. Private, because it has the extra
@@ -170,7 +170,6 @@ public abstract class UUSearchProblem {
         updateMemory(currentPath.size());
         incrementNodeCount();
 
-
         List<UUSearchNode> result;
         currentPath.add(currentNode); //add currentNode to the current path
         if(currentNode.goalTest()){ //if currentNode is the goal node (Base case 1)
@@ -178,7 +177,7 @@ public abstract class UUSearchProblem {
             result.add(currentNode);
             return result;
         }else if(depth > maxDepth){ // if the cutoff depth has been reached (Base case 2)
-            System.out.println("Exceeded Maximum depth of " + maxDepth + " with NO RESULT :(");
+//            System.out.println("Exceeded Maximum depth of " + maxDepth + " with NO RESULT :(");
             return null;
         }else{ // (Recursion)
             ArrayList<UUSearchNode> children = currentNode.getSuccessors();

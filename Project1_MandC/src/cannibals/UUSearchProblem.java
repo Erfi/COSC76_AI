@@ -134,11 +134,19 @@ public abstract class UUSearchProblem {
 	}
 
 
-	// set up the iterative deepening search, and make use of dfspc
-//	public List<UUSearchNode> IDSearch(int maxDepth) {
-//		resetStats();
-//		// you write this method
-//	}
+//    set up the iterative deepening search, and make use of dfspc
+	public List<UUSearchNode> IDSearch(int maxDepth) {
+		resetStats();
+		// you write this method
+        List<UUSearchNode> path;
+        for (int depth=0; depth<maxDepth; depth++){
+            path = depthFirstPathCheckingSearch(depth);
+            if (path != null){
+                return path;
+            }
+        }
+        return null; 
+	}
 
 	// set up the depth-first-search (path-checking version),
 	//  but call dfspc to do the real work

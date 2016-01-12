@@ -1,5 +1,11 @@
 package cannibals;
-
+/*
+Erfan Azad
+Date Updated: 11 January 2016
+File: CannibalDriver.java
+Created by: Devin Balkcom
+Modfied by: Erfan Azad
+*/
 import java.util.List;
 
 public class CannibalDriver {
@@ -18,7 +24,7 @@ public class CannibalDriver {
 
 
 		path = mcProblem.breadthFirstSearch();
-		System.out.println("bfs path length:  " + path.size()/* + " " + path*/);
+		System.out.println("bfs path length:  " + path.size() + " " + path);
 		mcProblem.printStats();
 		System.out.println("--------");
 
@@ -34,8 +40,8 @@ public class CannibalDriver {
 		System.out.println("dfs path checking path length:" + path.size());
 		mcProblem.printStats();
 //        System.out.println(path);
-//
-//
+
+
 		System.out.println("--------");
 		path = mcProblem.IDSearch(MAXDEPTH);
 		System.out.println("Iterative deepening (path checking) path length:" + path.size());

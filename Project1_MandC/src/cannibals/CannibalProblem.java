@@ -1,6 +1,12 @@
 package cannibals;
 
-import com.sun.org.apache.bcel.internal.util.ClassQueue;
+/*
+Erfan Azad
+Date Updated: 11 January 2016
+File: CannibalProblem.java
+Created by: Devin Balkcom
+Modfied by: Erfan Azad
+*/
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,24 +62,17 @@ public class CannibalProblem  extends UUSearchProblem {
             this.state[2] = b;
 
             depth = d;
-
         }
 
         public ArrayList<UUSearchNode> getSuccessors() {
             // add actions (denoted by how many missionaries and cannibals to put
             // in the boat) to current state.
 
-            // You write this method.  Factoring is usually worthwhile.  In my
-            //  implementation, I wrote an additional private method 'isSafeState',
-            //  that I made use of in getSuccessors.  You may write any method
-            //  you like in support of getSuccessors.
-
             //The big idea here is that im gonna make make CannibalNodes containing all the possible
             //states (which is 5)
             //Then I check to see if they are 1)Feasible and 2)Legal each of them that meet those conditions
-            //will be added to the final list that is returned....(dropping the mic!)
-
-
+            //will be added to the final list that is returned....
+            // (dropping the mic!: https://i.ytimg.com/vi/AZfWwZZoN3o/maxresdefault.jpg)
 
             ArrayList<UUSearchNode> successors = new ArrayList<UUSearchNode>();//this will be returned
             ArrayList<CannibalNode> helper = new ArrayList<CannibalNode>();
@@ -98,7 +97,6 @@ public class CannibalProblem  extends UUSearchProblem {
                     successors.add(n);
                 }
             }
-
             return successors;
         }
 
@@ -133,7 +131,6 @@ public class CannibalProblem  extends UUSearchProblem {
 
         /*@Override*/
         public boolean goalTest() {
-            // you write this method.  (It should be only one line long.
             return (this.state[0]==goalm && this.state[1]==goalc && this.state[2]==goalb);
         }
 
@@ -157,18 +154,10 @@ public class CannibalProblem  extends UUSearchProblem {
             // |  <M,C,B>  |
             // | Depth = d |
             //  -----------
-
-//            System.out.println(" ----------- ");
-//            System.out.println("|  <" + this.state[0] + "," + this.state[1] + "," + this.state[2] + ">  |");
-//            System.out.println("| Depth = " + this.depth + " |");
-//            System.out.println(" ----------- ");
-
-            return "\n ----------- \n" + "|  <" + this.state[0] + "," + this.state[1] + "," + this.state[2] + ">  |\n" + "| Depth = " + this.depth + " |\n" + " ----------- \n";
+            return "\n ----------- \n" + "|  <" + this.state[0] + "," + this.state[1] + "," + this.state[2] + ">  |\n"
+                    + "| Depth = " + this.depth + " |\n" + " ----------- \n";
         }
 
-
-        // You might need this method when you start writing
-        // (and debugging) UUSearchProblem.
         /*@Override*/
         public int getDepth() {
             return depth;
@@ -183,16 +172,16 @@ public class CannibalProblem  extends UUSearchProblem {
         System.out.println("====Testing CannibalProblem class====");
 
         CannibalProblem cp = new CannibalProblem(3,3,1,0,0,0); // start: (3,3,1)
-//        CannibalProblem cp2 = new CannibalProblem(3,3,1,0,0,0); // start (3,2,1)
-//        System.out.println(cp.startNode);
-////        System.out.println(cp.startNode.getDepth());
-////        System.out.println(cp.startNode.hashCode());
-////        System.out.println(cp.startNode.equals(cp.startNode));
-////        System.out.println(cp.startNode.equals(cp2.startNode));
-//
-////        System.out.println(cp.startNode.goalTest());
-//        System.out.println(cp.startNode.getSuccessors().get(2).getSuccessors());
+        CannibalProblem cp2 = new CannibalProblem(3,3,1,0,0,0); // start (3,2,1)
+        System.out.println(cp.startNode);
+        System.out.println(cp.startNode.getDepth());
+        System.out.println(cp.startNode.hashCode());
 
+        System.out.println(cp.startNode.equals(cp.startNode));
+        System.out.println(cp.startNode.equals(cp2.startNode));
+
+        System.out.println(cp.startNode.goalTest());
+        System.out.println(cp.startNode.getSuccessors().get(2).getSuccessors());
 
     }
 }

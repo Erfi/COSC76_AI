@@ -1,8 +1,12 @@
 package cannibals;
 
-// CLEARLY INDICATE THE AUTHOR OF THE FILE HERE (YOU),
-//  AND ATTRIBUTE ANY SOURCES USED (INCLUDING THIS STUB, BY
-//  DEVIN BALKCOM).
+/*
+Erfan Azad
+Date Updated: 11 January 2016
+File: UUSearchProblem.java
+Created by: Devin Balkcom
+Modfied by: Erfan Azad
+*/
 
 
 import java.util.ArrayList;
@@ -74,14 +78,13 @@ public abstract class UUSearchProblem {
                     }
                 }
             }
-            return null;
+            return null; // failure to find the goal (goal does not exist!)
         }
 	}
 
 	// backchain should only be used by bfs, not the recursive dfs
 	private List<UUSearchNode> backchain(UUSearchNode node,
 			HashMap<UUSearchNode, UUSearchNode> visited) { //DEBUG THIS IT KEEPS ADDING <010> to the path until it runs out, Why <010> has parent <010>?
-		// you will write this method
         List<UUSearchNode> path = new ArrayList<UUSearchNode>();
         UUSearchNode tempNode = node;
         while(tempNode != null){
@@ -108,8 +111,6 @@ public abstract class UUSearchProblem {
 		updateMemory(visited.size());
 		incrementNodeCount();
 
-		// you write this method.  Comments *must* clearly show the
-		//  "base case" and "recursive case" that any recursive function has.
         List<UUSearchNode> path = null;
         visited.add(currentNode); //mark the current node as visited
         if(currentNode.goalTest()){ //if the current node is the goal (basecase 1)
@@ -125,7 +126,7 @@ public abstract class UUSearchProblem {
             for (UUSearchNode child : children){
                 // if not yet visited then visit it!
                 if(!visited.contains(child)) {
-                    path = dfsrm(child, visited, depth + 1, maxDepth);
+                    path = dfsrm(child, visited, depth + 1, maxDepth); //(Here be recursion!)
                     if(path != null) {// not failure or cutoff
                         //we have found the goal, add currentNode to the path and pass it on!
                         path.add(currentNode);
@@ -144,12 +145,13 @@ public abstract class UUSearchProblem {
 		// you write this method
         List<UUSearchNode> path;
         for (int depth=0; depth<maxDepth; depth++){
+//            System.out.println("Depth#: " + depth);
             path = depthFirstPathCheckingSearch(depth);
             if (path != null){
                 return path;
             }
         }
-        return null;
+        return null; //failure
 	}
 
 	// set up the depth-first-search (path-checking version),
@@ -171,7 +173,7 @@ public abstract class UUSearchProblem {
         incrementNodeCount();
 
         List<UUSearchNode> result;
-        currentPath.add(currentNode); //add currentNode to the current path
+        currentPath.add(currentNode); //add currentNode to the currentPath
         if(currentNode.goalTest()){ //if currentNode is the goal node (Base case 1)
             result = new ArrayList<UUSearchNode>();
             result.add(currentNode);
@@ -183,7 +185,7 @@ public abstract class UUSearchProblem {
             ArrayList<UUSearchNode> children = currentNode.getSuccessors();
             for (UUSearchNode child : children){
                 if (!currentPath.contains(child)){ //if the child is not part of the current path then visit it!
-                    result = dfsrpc(child, currentPath, depth+1, maxDepth);
+                    result = dfsrpc(child, currentPath, depth+1, maxDepth); //(Here be recursion!)
                     if (result == null){ //failure or cutoff
                         currentPath.remove(child);
                     }else{
@@ -192,7 +194,7 @@ public abstract class UUSearchProblem {
                     }
                 }
             }
-            return null;
+            return null; // failure
         }
     }
 

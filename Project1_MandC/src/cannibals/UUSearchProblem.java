@@ -98,7 +98,7 @@ public abstract class UUSearchProblem {
 //	 recursive memoizing dfs. Private, because it has the extra
 //	 parameters needed for recursion.
 	private List<UUSearchNode> dfsrm(UUSearchNode currentNode, HashSet<UUSearchNode> visited,
-			int depth, int maxDepth) {
+			int depth, int maxDepth) { //NOTE: used a HashSet instead of HashMap
 
 		// keep track of stats; these calls charge for the current node
 		updateMemory(visited.size());
@@ -122,15 +122,14 @@ public abstract class UUSearchProblem {
                 // if not yet visited then visit it!
                 if(!visited.contains(child)) {
                     path = dfsrm(child, visited, depth + 1, maxDepth);
-                    if(path == null){// failure or cutoff
-                        return null;
-                    }else{ //we have found the goal add currentNode to the path and pass it on!
+                    if(path != null) {// not failure or cutoff
+                        //we have found the goal, add currentNode to the path and pass it on!
                         path.add(currentNode);
                         return path;
                     }
                 }
             }
-            return null;
+            return null; // failure
         }
 	}
 
@@ -143,26 +142,52 @@ public abstract class UUSearchProblem {
 
 	// set up the depth-first-search (path-checking version),
 	//  but call dfspc to do the real work
-//	public List<UUSearchNode> depthFirstPathCheckingSearch(int maxDepth) {
-//		resetStats();
-//
-//		// I wrote this method for you.  Nothing to do.
-//
-//		HashSet<UUSearchNode> currentPath = new HashSet<UUSearchNode>();
-//
-//		return dfsrpc(startNode, currentPath, 0, maxDepth);
-//
-//	}
+	public List<UUSearchNode> depthFirstPathCheckingSearch(int maxDepth) {
+		resetStats();
+
+		// I wrote this method for you.  Nothing to do.
+
+		HashSet<UUSearchNode> currentPath = new HashSet<UUSearchNode>();
+
+		return dfsrpc(startNode, currentPath, 0, maxDepth);
+
+	}
 
 	// recursive path-checking dfs. Private, because it has the extra
 	// parameters needed for recursion.
-//	private List<UUSearchNode> dfsrpc(UUSearchNode currentNode, HashSet<UUSearchNode> currentPath,
-//			int depth, int maxDepth) {
-//
-//		// you write this method
-//
-//		return null;
-//	}
+	private List<UUSearchNode> dfsrpc(UUSearchNode currentNode, HashSet<UUSearchNode> currentPath,
+			int depth, int maxDepth) {
+
+        // keep track of stats; these calls charge for the current node
+        updateMemory(currentPath.size());
+        incrementNodeCount();
+
+
+        List<UUSearchNode> result;
+        currentPath.add(currentNode); //add currentNode to the current path
+        if(currentNode.goalTest()){ //if currentNode is the goal node (Base case 1)
+            result = new ArrayList<UUSearchNode>();
+            result.add(currentNode);
+            return result;
+        }else if(depth > maxDepth){ // if the cutoff depth has been reached (Base case 2)
+            System.out.println("Exceeded Maximum depth of " + maxDepth + " with NO RESULT :(");
+            return null;
+        }else{ // (Recursion)
+            ArrayList<UUSearchNode> children = currentNode.getSuccessors();
+            for (UUSearchNode child : children){
+                if (!currentPath.contains(child)){ //if the child is not part of the current path then visit it!
+                    result = dfsrpc(child, currentPath, depth+1, maxDepth);
+                    if (result == null){ //failure or cutoff
+                        currentPath.remove(child);
+                    }else{
+                        result.add(currentNode);
+                        return result;
+                    }
+                }
+            }
+            return null;
+        }
+    }
 
 	protected void resetStats() {
 		nodesExplored = 0;

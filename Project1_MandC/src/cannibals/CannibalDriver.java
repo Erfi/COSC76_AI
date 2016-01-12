@@ -24,15 +24,16 @@ public class CannibalDriver {
 
 
 
-		path = mcProblem.depthFirstMemoizingSearch(MAXDEPTH);
-		System.out.println("dfs memoizing path length:" + path.size());
-		mcProblem.printStats();
-		System.out.println(path);
-		System.out.println("--------");
-//
-//		path = mcProblem.depthFirstPathCheckingSearch(MAXDEPTH);
-//		System.out.println("dfs path checking path length:" + path.size());
+//		path = mcProblem.depthFirstMemoizingSearch(MAXDEPTH);
+//		System.out.println("dfs memoizing path length:" + path.size());
 //		mcProblem.printStats();
+//		System.out.println(path);
+//		System.out.println("--------");
+//
+		path = mcProblem.depthFirstPathCheckingSearch(MAXDEPTH);
+		System.out.println("dfs path checking path length:" + path.size());
+		mcProblem.printStats();
+        System.out.println(path);
 //
 //
 //		System.out.println("--------");

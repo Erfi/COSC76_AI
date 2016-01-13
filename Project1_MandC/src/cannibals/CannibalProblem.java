@@ -78,17 +78,27 @@ public class CannibalProblem  extends UUSearchProblem {
             ArrayList<CannibalNode> helper = new ArrayList<CannibalNode>();
 
             if (this.state[2]==1){ //if the boat is on the starting shore
-                helper.add(new CannibalNode(this.state[0] - 2, this.state[1], this.state[2] - 1, this.depth + 1)); //subtracting <201>
-                helper.add(new CannibalNode(this.state[0], this.state[1] - 2, this.state[2] - 1, this.depth + 1)); //subtracting <021>
-                helper.add(new CannibalNode(this.state[0] - 1, this.state[1] - 1, this.state[2] - 1, this.depth + 1)); //subtracting <111>
-                helper.add(new CannibalNode(this.state[0] - 1, this.state[1], this.state[2] - 1, this.depth + 1)); //subtracting <101>
-                helper.add(new CannibalNode(this.state[0], this.state[1] - 1, this.state[2] - 1, this.depth + 1)); //subtracting <011>
+                helper.add(new CannibalNode(this.state[0] - 2, this.state[1],
+                        this.state[2] - 1, this.depth + 1)); //subtracting <201>
+                helper.add(new CannibalNode(this.state[0], this.state[1] - 2,
+                        this.state[2] - 1, this.depth + 1)); //subtracting <021>
+                helper.add(new CannibalNode(this.state[0] - 1, this.state[1] - 1,
+                        this.state[2] - 1, this.depth + 1)); //subtracting <111>
+                helper.add(new CannibalNode(this.state[0] - 1, this.state[1],
+                        this.state[2] - 1, this.depth + 1)); //subtracting <101>
+                helper.add(new CannibalNode(this.state[0], this.state[1] - 1,
+                        this.state[2] - 1, this.depth + 1)); //subtracting <011>
             }else{ //if the boat is on the opposite shore
-                helper.add(new CannibalNode(this.state[0] + 2, this.state[1], this.state[2] + 1, this.depth + 1)); //adding <201>
-                helper.add(new CannibalNode(this.state[0], this.state[1] + 2, this.state[2] + 1, this.depth + 1)); //adding <021>
-                helper.add(new CannibalNode(this.state[0] + 1, this.state[1] + 1, this.state[2] + 1, this.depth + 1)); //adding <111>
-                helper.add(new CannibalNode(this.state[0] + 1, this.state[1], this.state[2] + 1, this.depth + 1)); //adding <101>
-                helper.add(new CannibalNode(this.state[0], this.state[1] + 1, this.state[2] + 1, this.depth + 1)); //adding <011>
+                helper.add(new CannibalNode(this.state[0] + 2, this.state[1],
+                        this.state[2] + 1, this.depth + 1)); //adding <201>
+                helper.add(new CannibalNode(this.state[0], this.state[1] + 2,
+                        this.state[2] + 1, this.depth + 1)); //adding <021>
+                helper.add(new CannibalNode(this.state[0] + 1, this.state[1] + 1,
+                        this.state[2] + 1, this.depth + 1)); //adding <111>
+                helper.add(new CannibalNode(this.state[0] + 1, this.state[1],
+                        this.state[2] + 1, this.depth + 1)); //adding <101>
+                helper.add(new CannibalNode(this.state[0], this.state[1] + 1,
+                        this.state[2] + 1, this.depth + 1)); //adding <011>
             }
 
             //now we check for feasibility and legality

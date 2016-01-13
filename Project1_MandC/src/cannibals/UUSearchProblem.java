@@ -84,7 +84,7 @@ public abstract class UUSearchProblem {
 
 	// backchain should only be used by bfs, not the recursive dfs
 	private List<UUSearchNode> backchain(UUSearchNode node,
-			HashMap<UUSearchNode, UUSearchNode> visited) { //DEBUG THIS IT KEEPS ADDING <010> to the path until it runs out, Why <010> has parent <010>?
+			HashMap<UUSearchNode, UUSearchNode> visited) {
         List<UUSearchNode> path = new ArrayList<UUSearchNode>();
         UUSearchNode tempNode = node;
         while(tempNode != null){

@@ -24,7 +24,7 @@ public class CannibalDriver {
 
 
 		path = mcProblem.breadthFirstSearch();
-		System.out.println("bfs path length:  " + path.size() + " " + path);
+		System.out.println("bfs path length:  " + path.size() /* + " " + path*/);
 		mcProblem.printStats();
 		System.out.println("--------");
 

@@ -48,22 +48,27 @@ public class SimpleMazeDriver extends Application {
 		SimpleMazeProblem mazeProblem = new SimpleMazeProblem(maze, sx, sy, gx,
 				gy);
 
-		List<SearchNode> bfsPath = mazeProblem.breadthFirstSearch();
-		animationPathList.add(new AnimationPath(mazeView, bfsPath));
-		System.out.println("DFS:  ");
-		mazeProblem.printStats();
+//		List<SearchNode> bfsPath = mazeProblem.breadthFirstSearch();
+//		animationPathList.add(new AnimationPath(mazeView, bfsPath));
+//		System.out.println("BFS:  ");
+//		mazeProblem.printStats();
+//
+//		List<SearchNode> dfsPath = mazeProblem
+//				.depthFirstPathCheckingSearch(5000);
+//		animationPathList.add(new AnimationPath(mazeView, dfsPath));
+//		System.out.println("DFS:  ");
+//		mazeProblem.printStats();
 
-		List<SearchNode> dfsPath = mazeProblem
-				.depthFirstPathCheckingSearch(5000);
-		animationPathList.add(new AnimationPath(mazeView, dfsPath));
-		System.out.println("BFS:  ");
-		mazeProblem.printStats();
-/*
 		List<SearchNode> astarPath = mazeProblem.astarSearch();
 		animationPathList.add(new AnimationPath(mazeView, astarPath));
 		System.out.println("A*:  ");
 		mazeProblem.printStats();
-*/
+
+//		List<SearchNode> uniformCostPath = mazeProblem.UniformCostSearch();
+//		animationPathList.add(new AnimationPath(mazeView, uniformCostPath));
+//		System.out.println("Uniform-Cost:  ");
+//		mazeProblem.printStats();
+
 	}
 
 

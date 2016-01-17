@@ -25,7 +25,7 @@ public class SimpleMazeProblem extends InformedSearchProblem {
 	}
 	
 
-	
+	//================SimpleMazeNode class=================
 	// node class used by searches.  Searches themselves are implemented
 	//  in SearchProblem.
 	public class SimpleMazeNode implements SearchNode {
@@ -125,5 +125,6 @@ public class SimpleMazeProblem extends InformedSearchProblem {
 		}
 
 	}
+	//===============End of SimpleMazeNode class==================
 
 }

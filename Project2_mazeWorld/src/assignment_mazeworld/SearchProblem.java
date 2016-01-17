@@ -18,6 +18,7 @@ public abstract class SearchProblem {
 
 	protected SearchNode startNode;
 
+	//===============SearchNode Interface===================
 	protected interface SearchNode extends Comparable<SearchNode> {
 		public ArrayList<SearchNode> getSuccessors();
 
@@ -33,6 +34,7 @@ public abstract class SearchProblem {
 		public double heuristic();
 		public double priority();
 	}
+	//=======================================================
 
 	// breadthFirstSearch: return a list of connecting Nodes, or null
 	// no parameters, since start and goal descriptions are problem-dependent.

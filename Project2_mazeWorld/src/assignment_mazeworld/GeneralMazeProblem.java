@@ -158,7 +158,7 @@ public class GeneralMazeProblem extends InformedSearchProblem {
             }
             hashStr.append(Integer.toString(turn)); //if state->{{1,2},{3,4}} and turn->1, hashStr.toString()->"12341"
 
-            return Integer.parseInt(hashStr.toString()); // int --> 12341
+            return hashStr.toString().hashCode(); // makes a hashcode from the string
         }
 
         @Override

@@ -46,8 +46,8 @@ public class SimpleMazeDriver extends Application {
 		int gy = 0;
 
         //to be used with GeneralMazeProblem
-        int[][] starts = new int[][]{{0,0},{0,6}};
-        int[][] goals = new int[][]{{3,4},{1,4}};
+        int[][] starts = new int[][]{{0,0},{0,6},{6,6},{6,0}};
+        int[][] goals = new int[][]{{6,6},{6,0},{0,0},{0,6}};
 
 		SimpleMazeProblem mazeProblem = new SimpleMazeProblem(maze, sx, sy, gx,
 				gy);
@@ -77,6 +77,9 @@ public class SimpleMazeDriver extends Application {
         //==========Testing GeneralMazeProblem===========
         List<SearchNode> genAstarPath = genMazeProblem.astarSearch();
         System.out.println(genAstarPath);
+        System.out.println("GeneralMaze A*: ");
+        genMazeProblem.printStats();
+//        animationPathList.add(new AnimationPath(mazeView, genAstarPath));
 //        System.out.println(genMazeProblem.startNode); //start
 //        System.out.println(genMazeProblem.startNode.goalTest());
 //        System.out.println(genMazeProblem.startNode.getSuccessors());

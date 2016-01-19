@@ -164,7 +164,7 @@ public class GeneralMazeProblem extends InformedSearchProblem {
         @Override
         public String toString() {
             StringBuilder strBuff = new StringBuilder();
-            strBuff.append("{turn = ").append(Integer.toString(turn)).append(" | cost = ").append(Double.toString(cost)).append(" | [ ");
+            strBuff.append("{turn:").append(Integer.toString(turn)).append(" | cost:").append(Double.toString(cost)).append(" | [ ");
             for(int[] s : state){
                 strBuff.append("[").append(Integer.toString(s[0])).append(",").append(Integer.toString(s[1])).append("] ");
             }

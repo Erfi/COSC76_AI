@@ -20,16 +20,21 @@ public class GeneralMazeProblem extends InformedSearchProblem {
 
     private int[][] starts_xy; //array of [[xStart_1, yStart_1],...,[xStart_i, yStart_i],...,[xStart_k, yStart_k]] for start of the ith agent
     private int[][] goals_xy; //array of [[xGoal_1, yGoal_1],...,[xGoal_i, yGoal_i],...,[xGoal_k, yGoal_k]] for goal of the ith agent
-
+    private int numAgents;
     private Maze maze;
 
     public GeneralMazeProblem(Maze m, int[][] starts, int[][] goals) {
 
         starts_xy = starts;
         goals_xy = goals;
+        numAgents = starts.length;
 
         startNode = new GeneralMazeNode(starts,0,0);
         maze = m;
+    }
+
+    public int getNumAgents(){
+        return numAgents;
     }
 
 
@@ -49,10 +54,17 @@ public class GeneralMazeProblem extends InformedSearchProblem {
         //  and for comparing paths
         private double cost;
 
+        private int numAgents;
+
         public GeneralMazeNode(int[][] s, double c, int t) {
             state = s; //deep copy (java passes primitive types by value)
             turn = t;
             cost = c;
+            numAgents = s.length;
+        }
+
+        public int getNumAgents(){
+            return this.numAgents;
         }
 
         public int getXof(int i) {
@@ -111,7 +123,9 @@ public class GeneralMazeProblem extends InformedSearchProblem {
          private boolean isFree(int x, int y){
              for(int[] location : state){ // for every [x_i,y_i] in the states check if x_i == x and y_i ==y
                  if(location[0] == x && location[1] == y ){ //if there is an agent already there
-                     if((state[turn][0] != x) && (state[turn][1] != y)) {// if the agent isn't it self (used in case this one is just chilling there and passing its turn)
+                     if((state[turn][0] == x) && (state[turn][1] == y)) {// if the agent isn't it self (used in case this one is just chilling there and passing its turn)
+                         continue;
+                     }else{
                          return false;
                      }
                  }

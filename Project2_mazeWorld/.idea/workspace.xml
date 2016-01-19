@@ -100,7 +100,7 @@
         <entry file="file://$PROJECT_DIR$/src/assignment_mazeworld/GeneralMazeDriver.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.33333334">
-              <caret line="83" column="47" selection-start-line="83" selection-start-column="47" selection-end-line="83" selection-end-column="47" />
+              <caret line="48" column="44" selection-start-line="48" selection-start-column="44" selection-end-line="48" selection-end-column="44" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#2295#2296#0" expanded="true" />
@@ -116,7 +116,7 @@
         <entry file="file://$PROJECT_DIR$/simple.maz">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="4" column="6" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="6" />
+              <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
               <folding />
             </state>
           </provider>
@@ -169,8 +169,8 @@
         <option value="$PROJECT_DIR$/test.java" />
         <option value="$PROJECT_DIR$/src/assignment_mazeworld/Maze.java" />
         <option value="$PROJECT_DIR$/src/assignment_mazeworld/SimpleMazeDriver.java" />
-        <option value="$PROJECT_DIR$/simple.maz" />
         <option value="$PROJECT_DIR$/src/assignment_mazeworld/GeneralMazeProblem.java" />
+        <option value="$PROJECT_DIR$/simple.maz" />
         <option value="$PROJECT_DIR$/src/assignment_mazeworld/GeneralMazeDriver.java" />
       </list>
     </option>
@@ -764,6 +764,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/assignment_mazeworld/SimpleMazeDriver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="51" column="37" selection-start-line="51" selection-start-column="26" selection-end-line="51" selection-end-column="37" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/assignment_mazeworld/GeneralMazeProblem.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -787,25 +797,15 @@
     <entry file="file://$PROJECT_DIR$/simple.maz">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="4" column="6" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="6" />
+          <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/assignment_mazeworld/SimpleMazeDriver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="51" column="37" selection-start-line="51" selection-start-column="26" selection-end-line="51" selection-end-column="37" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/assignment_mazeworld/GeneralMazeDriver.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33333334">
-          <caret line="83" column="47" selection-start-line="83" selection-start-column="47" selection-end-line="83" selection-end-column="47" />
+          <caret line="48" column="44" selection-start-line="48" selection-start-column="44" selection-end-line="48" selection-end-column="44" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#2295#2296#0" expanded="true" />

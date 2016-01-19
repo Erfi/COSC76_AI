@@ -45,8 +45,8 @@ public class GeneralMazeDriver extends Application {
     private void runSearches() {
 
         //to be used with GeneralMazeProblem
-        int[][] starts = new int[][]{{0,0},{0,6},{6,6}/*,{6,0}*/};
-        int[][] goals = new int[][]{{4,1},{6,0},{0,0}/*,{0,6}*/};
+        int[][] starts = new int[][]{{0,0},{0,9},{0,6}/*,{6,0}*/};
+        int[][] goals = new int[][]{{0,9},{5,4},{0,3}/*,{0,6}*/};
 
         GeneralMazeProblem genMazeProblem = new GeneralMazeProblem(maze, starts , goals);
 

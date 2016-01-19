@@ -23,7 +23,7 @@ public class SimpleMazeProblem extends InformedSearchProblem {
 		
 		maze = m;		
 	}
-	
+
 
 	//================SimpleMazeNode class=================
 	// node class used by searches.  Searches themselves are implemented

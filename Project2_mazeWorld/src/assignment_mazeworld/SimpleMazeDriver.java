@@ -45,8 +45,13 @@ public class SimpleMazeDriver extends Application {
 		int gx = 6;
 		int gy = 0;
 
+        //to be used with GeneralMazeProblem
+        int[][] starts = new int[][]{{0,0},{0,6}};
+        int[][] goals = new int[][]{{3,4},{1,4}};
+
 		SimpleMazeProblem mazeProblem = new SimpleMazeProblem(maze, sx, sy, gx,
 				gy);
+		GeneralMazeProblem genMazeProblem = new GeneralMazeProblem(maze, starts , goals);
 
 //		List<SearchNode> bfsPath = mazeProblem.breadthFirstSearch();
 //		animationPathList.add(new AnimationPath(mazeView, bfsPath));
@@ -59,15 +64,22 @@ public class SimpleMazeDriver extends Application {
 //		System.out.println("DFS:  ");
 //		mazeProblem.printStats();
 
-		List<SearchNode> astarPath = mazeProblem.astarSearch();
-		animationPathList.add(new AnimationPath(mazeView, astarPath));
-		System.out.println("A*:  ");
-		mazeProblem.printStats();
+//		List<SearchNode> astarPath = mazeProblem.astarSearch();
+//		animationPathList.add(new AnimationPath(mazeView, astarPath));
+//		System.out.println("A*:  ");
+//		mazeProblem.printStats();
 
 //		List<SearchNode> uniformCostPath = mazeProblem.UniformCostSearch();
 //		animationPathList.add(new AnimationPath(mazeView, uniformCostPath));
 //		System.out.println("Uniform-Cost:  ");
 //		mazeProblem.printStats();
+
+        //==========Testing GeneralMazeProblem===========
+        List<SearchNode> genAstarPath = genMazeProblem.astarSearch();
+        System.out.println(genAstarPath);
+//        System.out.println(genMazeProblem.startNode); //start
+//        System.out.println(genMazeProblem.startNode.goalTest());
+//        System.out.println(genMazeProblem.startNode.getSuccessors());
 
 	}
 
@@ -95,7 +107,7 @@ public class SimpleMazeDriver extends Application {
 		runSearches();
 
 		// sets mazeworld's game loop (a javafx Timeline)
-		Timeline timeline = new Timeline(1.0);
+		Timeline timeline = new Timeline(2); //The higher the number the faster it goes [sec/number --> wait]
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.getKeyFrames().add(
 				new KeyFrame(Duration.seconds(.05), new GameHandler()));

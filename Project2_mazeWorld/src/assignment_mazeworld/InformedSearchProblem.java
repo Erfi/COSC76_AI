@@ -18,7 +18,7 @@ public class InformedSearchProblem extends SearchProblem {
         while(!frontier.isEmpty()){
             //====for stats purposes===
             incrementNodeCount();
-            updateMemory(frontier.size() + visited.size());
+            updateMemory(frontier.size() + visited.size() + costTable.size());
             //=========================
 
             SearchNode currentNode = frontier.poll();

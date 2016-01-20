@@ -2,6 +2,8 @@ package assignment_mazeworld;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import javafx.animation.KeyFrame;
@@ -40,36 +42,49 @@ public class BlindMazeDriver extends Application {
 
     // assumes maze and mazeView instance variables are already available
     private void runSearches() {
+        HashSet<int[]> start = new HashSet<int[]>();
+        //initialize the belief state to the maze locations except the walls
+        for(int i=0; i<maze.getSize()[0]; i++) { //for the width of the maze
+            for (int j = 0; j < maze.getSize()[1]; j++) {// for the height of the maze
+                if(maze.isLegal(i,j)){
+                    start.add(new int[]{i, j});
+                }
+            }
+        }
 
-        int sx = 0;
-        int sy = 0;
-        int gx = 6;
-        int gy = 0;
+        int gx = 2;
+        int gy = 2;
 
 
-        BlindMazeProblem mazeProblem = new BlindMazeProblem(maze, sx, sy, gx,
+        BlindMazeProblem mazeProblem = new BlindMazeProblem(maze,start, gx,
                 gy);
 
-        List<SearchNode> bfsPath = mazeProblem.breadthFirstSearch();
-        animationPathList.add(new AnimationPath(mazeView, bfsPath));
-        System.out.println("BFS:  ");
-        mazeProblem.printStats();
+//        List<SearchNode> bfsPath = mazeProblem.breadthFirstSearch();
+//        animationPathList.add(new AnimationPath(mazeView, bfsPath));
+//        System.out.println("BFS:  ");
+//        mazeProblem.printStats();
+//
+//        List<SearchNode> dfsPath = mazeProblem
+//                .depthFirstPathCheckingSearch(5000);
+//        animationPathList.add(new AnimationPath(mazeView, dfsPath));
+//        System.out.println("DFS:  ");
+//        mazeProblem.printStats();
+//
+//        List<SearchNode> astarPath = mazeProblem.astarSearch();
+//        animationPathList.add(new AnimationPath(mazeView, astarPath));
+//        System.out.println("A*:  ");
+//        mazeProblem.printStats();
+//
+//        List<SearchNode> uniformCostPath = mazeProblem.UniformCostSearch();
+//        animationPathList.add(new AnimationPath(mazeView, uniformCostPath));
+//        System.out.println("Uniform-Cost:  ");
+//        mazeProblem.printStats();
 
-        List<SearchNode> dfsPath = mazeProblem
-                .depthFirstPathCheckingSearch(5000);
-        animationPathList.add(new AnimationPath(mazeView, dfsPath));
-        System.out.println("DFS:  ");
+        List<SearchNode> blindAstarPath = mazeProblem.astarSearch();
+        animationPathList.add(new AnimationPath(mazeView, blindAstarPath));
+        System.out.println("BlindAstar:  ");
         mazeProblem.printStats();
-
-        List<SearchNode> astarPath = mazeProblem.astarSearch();
-        animationPathList.add(new AnimationPath(mazeView, astarPath));
-        System.out.println("A*:  ");
-        mazeProblem.printStats();
-
-        List<SearchNode> uniformCostPath = mazeProblem.UniformCostSearch();
-        animationPathList.add(new AnimationPath(mazeView, uniformCostPath));
-        System.out.println("Uniform-Cost:  ");
-        mazeProblem.printStats();
+        System.out.println(blindAstarPath);
     }
 
 
@@ -104,41 +119,49 @@ public class BlindMazeDriver extends Application {
 
     }
 
-    // every frame, this method gets called and tries to do the next move
-    //  for each animationPath.
-    private class GameHandler implements EventHandler<ActionEvent> {
+//    // every frame, this method gets called and tries to do the next move
+//  for each animationPath.
+private class GameHandler implements EventHandler<ActionEvent> {
 
-        @Override
-        public void handle(ActionEvent e) {
-            // System.out.println("timer fired");
-            for (AnimationPath animationPath : animationPathList) {
-                // note:  animationPath.doNextMove() does nothing if the
-                //  previous animation is not complete.  If previous is complete,
-                //  then a new animation of a piece is started.
-                animationPath.doNextMove();
-            }
+    @Override
+    public void handle(ActionEvent e) {
+        // System.out.println("timer fired");
+        for (AnimationPath animationPath : animationPathList) {
+            // note:  animationPath.doNextMove() does nothing if the
+            //  previous animation is not complete.  If previous is complete,
+            //  then a new animation of a piece is started.
+            animationPath.doNextMove();
         }
     }
+}
 
     // each animation path needs to keep track of some information:
     // the underlying search path, the "piece" object used for animation,
     // etc.
     private class AnimationPath {
-        private Node piece;
-        private List<SearchNode> searchPath;
+        private Node[] pieces;
+        private List<SearchProblem.SearchNode> searchPath;
         private int currentMove = 0;
 
-        private int lastX;
-        private int lastY;
+        private int[] lastXs;
+        private int[] lastYs;
 
         boolean animationDone = true;
 
         public AnimationPath(MazeView mazeView, List<SearchNode> path) {
             searchPath = path;
             BlindMazeNode firstNode = (BlindMazeNode) searchPath.get(0);
-            piece = mazeView.addPiece(firstNode.getX(), firstNode.getY());
-            lastX = firstNode.getX();
-            lastY = firstNode.getY();
+            int beliefSize = firstNode.beliefState.size(); //size of the belief state
+            pieces = new Node[beliefSize];
+            lastXs = new int[beliefSize];
+            lastYs = new int[beliefSize];
+            int index = 0;
+            for(int[] loc : firstNode.beliefState){// for all possible locations of the agent
+                pieces[index] = mazeView.addPiece(loc[0], loc[1]);
+                lastXs[index] = loc[0];
+                lastYs[index] = loc[1];
+                index += 1;
+            }
         }
 
         // try to do the next step of the animation. Do nothing if
@@ -151,13 +174,15 @@ public class BlindMazeDriver extends Application {
             if (currentMove < searchPath.size() && animationDone) {
                 BlindMazeNode mazeNode = (BlindMazeNode) searchPath
                         .get(currentMove);
-                int dx = mazeNode.getX() - lastX;
-                int dy = mazeNode.getY() - lastY;
-                // System.out.println("animating " + dx + " " + dy);
-                animateMove(piece, dx, dy);
-                lastX = mazeNode.getX();
-                lastY = mazeNode.getY();
-
+                int index = 0;
+                for(int[] loc : mazeNode.beliefState){
+                    int dx = loc[0] - lastXs[index];
+                    int dy = loc[1] - lastYs[index];
+                    animateMove(pieces[index], dx, dy);
+                    lastXs[index] = loc[0];
+                    lastYs[index] = loc[1];
+                    index += 1;
+                }
                 currentMove++;
             }
 

@@ -51,6 +51,14 @@ public class Maze {
 		}
 	}
 
+    /**
+     *
+     * @return the [width, height] of the maze
+     */
+    protected int[] getSize(){
+        return new int[]{width, height};
+    }
+
 	private static List<String> readFile(String fileName) throws IOException {
 		Path path = Paths.get(fileName);
 		return Files.readAllLines(path, ENCODING);

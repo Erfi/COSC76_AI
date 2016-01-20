@@ -45,45 +45,31 @@ public class SimpleMazeDriver extends Application {
 		int gx = 6;
 		int gy = 0;
 
-        //to be used with GeneralMazeProblem
-        int[][] starts = new int[][]{{0,0},{0,6},{6,6},{6,0}};
-        int[][] goals = new int[][]{{6,6},{6,0},{0,0},{0,6}};
+
 
 		SimpleMazeProblem mazeProblem = new SimpleMazeProblem(maze, sx, sy, gx,
 				gy);
-		GeneralMazeProblem genMazeProblem = new GeneralMazeProblem(maze, starts , goals);
 
-//		List<SearchNode> bfsPath = mazeProblem.breadthFirstSearch();
-//		animationPathList.add(new AnimationPath(mazeView, bfsPath));
-//		System.out.println("BFS:  ");
-//		mazeProblem.printStats();
-//
-//		List<SearchNode> dfsPath = mazeProblem
-//				.depthFirstPathCheckingSearch(5000);
-//		animationPathList.add(new AnimationPath(mazeView, dfsPath));
-//		System.out.println("DFS:  ");
-//		mazeProblem.printStats();
+		List<SearchNode> bfsPath = mazeProblem.breadthFirstSearch();
+		animationPathList.add(new AnimationPath(mazeView, bfsPath));
+		System.out.println("BFS:  ");
+		mazeProblem.printStats();
 
-//		List<SearchNode> astarPath = mazeProblem.astarSearch();
-//		animationPathList.add(new AnimationPath(mazeView, astarPath));
-//		System.out.println("A*:  ");
-//		mazeProblem.printStats();
+		List<SearchNode> dfsPath = mazeProblem
+				.depthFirstPathCheckingSearch(5000);
+		animationPathList.add(new AnimationPath(mazeView, dfsPath));
+		System.out.println("DFS:  ");
+		mazeProblem.printStats();
 
-//		List<SearchNode> uniformCostPath = mazeProblem.UniformCostSearch();
-//		animationPathList.add(new AnimationPath(mazeView, uniformCostPath));
-//		System.out.println("Uniform-Cost:  ");
-//		mazeProblem.printStats();
+		List<SearchNode> astarPath = mazeProblem.astarSearch();
+		animationPathList.add(new AnimationPath(mazeView, astarPath));
+		System.out.println("A*:  ");
+		mazeProblem.printStats();
 
-        //==========Testing GeneralMazeProblem===========
-        List<SearchNode> genAstarPath = genMazeProblem.astarSearch();
-        System.out.println(genAstarPath);
-        System.out.println("GeneralMaze A*: ");
-        genMazeProblem.printStats();
-//        animationPathList.add(new AnimationPath(mazeView, genAstarPath));
-//        System.out.println(genMazeProblem.startNode); //start
-//        System.out.println(genMazeProblem.startNode.goalTest());
-//        System.out.println(genMazeProblem.startNode.getSuccessors());
-
+		List<SearchNode> uniformCostPath = mazeProblem.UniformCostSearch();
+		animationPathList.add(new AnimationPath(mazeView, uniformCostPath));
+		System.out.println("Uniform-Cost:  ");
+		mazeProblem.printStats();
 	}
 
 

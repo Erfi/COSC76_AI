@@ -1,5 +1,6 @@
 package assignment_mazeworld;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +16,9 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import assignment_mazeworld.SearchProblem.SearchNode;
-import assignment_mazeworld.GeneralMazeProblem.GeneralMazeNode;
+import assignment_mazeworld.BlindMazeProblem.BlindMazeNode;
 
-/**
- * Created by erfi on 1/18/16.
- * Same as SimpleMazeDriver.java but for GeneralMazeProblems
- */
-public class GeneralMazeDriver extends Application {
+public class BlindMazeDriver extends Application {
 
     Maze maze;
 
@@ -44,25 +41,35 @@ public class GeneralMazeDriver extends Application {
     // assumes maze and mazeView instance variables are already available
     private void runSearches() {
 
-        //to be used with GeneralMazeProblem
-        int[][] starts = new int[][]{{0,0},{0,9},{0,6}/*,{6,0}*/};
-        int[][] goals = new int[][]{{0,6},{5,4},{0,3}/*,{0,6}*/};
+        int sx = 0;
+        int sy = 0;
+        int gx = 6;
+        int gy = 0;
 
-        GeneralMazeProblem genMazeProblem = new GeneralMazeProblem(maze, starts , goals);
 
+        BlindMazeProblem mazeProblem = new BlindMazeProblem(maze, sx, sy, gx,
+                gy);
 
-        //==========Testing GeneralMazeProblem===========
-        List<SearchNode> genAstarPath = genMazeProblem.astarSearch();
-        System.out.println(genAstarPath);
-        System.out.println("GeneralMaze A*: ");
-        genMazeProblem.printStats();
-//        int numBots = genMazeProblem.getNumAgents();
-        animationPathList.add(new AnimationPath(mazeView, genAstarPath));
+        List<SearchNode> bfsPath = mazeProblem.breadthFirstSearch();
+        animationPathList.add(new AnimationPath(mazeView, bfsPath));
+        System.out.println("BFS:  ");
+        mazeProblem.printStats();
 
-//        System.out.println(genMazeProblem.startNode); //start
-//        System.out.println(genMazeProblem.startNode.goalTest());
-//        System.out.println(genMazeProblem.startNode.getSuccessors());
+        List<SearchNode> dfsPath = mazeProblem
+                .depthFirstPathCheckingSearch(5000);
+        animationPathList.add(new AnimationPath(mazeView, dfsPath));
+        System.out.println("DFS:  ");
+        mazeProblem.printStats();
 
+        List<SearchNode> astarPath = mazeProblem.astarSearch();
+        animationPathList.add(new AnimationPath(mazeView, astarPath));
+        System.out.println("A*:  ");
+        mazeProblem.printStats();
+
+        List<SearchNode> uniformCostPath = mazeProblem.UniformCostSearch();
+        animationPathList.add(new AnimationPath(mazeView, uniformCostPath));
+        System.out.println("Uniform-Cost:  ");
+        mazeProblem.printStats();
     }
 
 
@@ -89,7 +96,7 @@ public class GeneralMazeDriver extends Application {
         runSearches();
 
         // sets mazeworld's game loop (a javafx Timeline)
-        Timeline timeline = new Timeline(4); //The higher the number the faster it goes [sec/number --> wait]
+        Timeline timeline = new Timeline(2); //The higher the number the faster it goes [sec/number --> wait]
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.getKeyFrames().add(
                 new KeyFrame(Duration.seconds(.05), new GameHandler()));
@@ -117,30 +124,21 @@ public class GeneralMazeDriver extends Application {
     // the underlying search path, the "piece" object used for animation,
     // etc.
     private class AnimationPath {
-        private Node[] pieces;
-        private List<SearchProblem.SearchNode> searchPath;
+        private Node piece;
+        private List<SearchNode> searchPath;
         private int currentMove = 0;
 
-        private int[] lastXs;
-        private int[] lastYs;
+        private int lastX;
+        private int lastY;
 
         boolean animationDone = true;
 
         public AnimationPath(MazeView mazeView, List<SearchNode> path) {
             searchPath = path;
-            GeneralMazeNode firstNode = (GeneralMazeNode) searchPath.get(0);
-            int numBots = firstNode.getNumAgents(); //number of agents on the maze
-            pieces = new Node[numBots];
-            lastXs = new int[numBots];
-            lastYs = new int[numBots];
-            for(int i=0; i<numBots; i++){
-                pieces[i] = mazeView.addPiece(firstNode.getXof(i), firstNode.getYof(i));
-                lastXs[i] = firstNode.getXof(i);
-                lastYs[i] = firstNode.getYof(i);
-            }
-//            piece = mazeView.addPiece(firstNode.getXof(0), firstNode.getYof(0));
-//            lastX = firstNode.getXof(0);
-//            lastY = firstNode.getYof(0);
+            BlindMazeNode firstNode = (BlindMazeNode) searchPath.get(0);
+            piece = mazeView.addPiece(firstNode.getX(), firstNode.getY());
+            lastX = firstNode.getX();
+            lastY = firstNode.getY();
         }
 
         // try to do the next step of the animation. Do nothing if
@@ -151,21 +149,14 @@ public class GeneralMazeDriver extends Application {
             //  using a callback triggered when the current animation
             //  is complete
             if (currentMove < searchPath.size() && animationDone) {
-                GeneralMazeNode mazeNode = (GeneralMazeNode) searchPath
+                BlindMazeNode mazeNode = (BlindMazeNode) searchPath
                         .get(currentMove);
-                for(int i=0; i<mazeNode.getNumAgents(); i++){
-                    int dx = mazeNode.getXof(i) - lastXs[i];
-                    int dy = mazeNode.getYof(i) - lastYs[i];
-                    animateMove(pieces[i], dx, dy);
-                    lastXs[i] = mazeNode.getXof(i);
-                    lastYs[i] = mazeNode.getYof(i);
-                }
-//                int dx = mazeNode.getXof(0) - lastX;
-//                int dy = mazeNode.getYof(0) - lastY;
-//                // System.out.println("animating " + dx + " " + dy);
-//                animateMove(piece, dx, dy);
-//                lastX = mazeNode.getXof(0);
-//                lastY = mazeNode.getYof(0);
+                int dx = mazeNode.getX() - lastX;
+                int dy = mazeNode.getY() - lastY;
+                // System.out.println("animating " + dx + " " + dy);
+                animateMove(piece, dx, dy);
+                lastX = mazeNode.getX();
+                lastY = mazeNode.getY();
 
                 currentMove++;
             }

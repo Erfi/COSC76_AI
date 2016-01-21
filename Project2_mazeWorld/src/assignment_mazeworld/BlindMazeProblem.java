@@ -1,5 +1,6 @@
 package assignment_mazeworld;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,14 +13,13 @@ public class BlindMazeProblem extends InformedSearchProblem {
 
     private static int actions[][] = {Maze.NORTH, Maze.EAST, Maze.SOUTH, Maze.WEST};
 
-    private int xLocation, yLocation; //After the agent has located itself these will be used to find the path to its goal
     private int xGoal, yGoal;
-    private HashSet<int[]> startSet;
-
+//    private HashSet<int[]> startSet;
+    private HashSet<ArrayList<Integer>> startSet;
 
     private Maze maze;
 
-    public BlindMazeProblem(Maze m, HashSet<int[]> beliefState,int gx, int gy) {
+    public BlindMazeProblem(Maze m, HashSet<ArrayList<Integer>> beliefState,int gx, int gy) {
         startNode = new BlindMazeNode(beliefState, 0);
         startSet = beliefState;
         xGoal = gx;
@@ -34,32 +34,35 @@ public class BlindMazeProblem extends InformedSearchProblem {
     public class BlindMazeNode implements SearchNode {
 
         // possible locations of the agent in the maze --> {[x1,y1], [x2,y2] ,...}
-        protected HashSet<int[]> beliefState = new HashSet<int[]>();
+        protected HashSet<ArrayList<Integer>> beliefState = new HashSet<ArrayList<Integer>>();
 
         // how far the current node is from the start.  Not strictly required
         //  for uninformed search, but useful information for debugging,
         //  and for comparing paths
         private double cost;
 
-        public BlindMazeNode(HashSet<int[]> B_State , double c) {
+        public BlindMazeNode(HashSet<ArrayList<Integer>> B_State , double c) {
             beliefState = B_State;
             cost = c;
         }
 
         public ArrayList<SearchNode> getSuccessors() {
-
             ArrayList<SearchNode> successors = new ArrayList<SearchNode>();
-
             for (int[] action: actions) { //for each direction
-                HashSet<int[]> tempSet = new HashSet<int[]>();
-                for(int[] loc : beliefState) { //for each location in the beliefState
-                    int xNew = loc[0] + action[0];
-                    int yNew = loc[1] + action[1];
+                HashSet<ArrayList<Integer>> tempSet = new HashSet<ArrayList<Integer>>();
+                for(ArrayList<Integer> loc : beliefState) { //for each location in the beliefState
+                    int xNew = loc.get(0) + action[0];
+                    int yNew = loc.get(1) + action[1];
 
                     //System.out.println("testing successor " + xNew + " " + yNew);
-                    if (maze.isLegal(xNew, yNew)) {
-                        //System.out.println("legal successor found " + " " + xNew + " " + yNew);
-                        tempSet.add(new int[]{xNew, yNew}); //add the possible location to this belief set for this direction
+                    if (maze.isLegal(xNew, yNew)) { //if the new location is legal tehn add it
+//                        System.out.println("legal successor found " + " " + xNew + " " + yNew);
+                        ArrayList<Integer> tempArray = new ArrayList<Integer>();
+                        tempArray.add(0, xNew);
+                        tempArray.add(1, yNew);
+                        tempSet.add(tempArray); //add the possible location to this belief set for this direction
+                    }else{//if not add the old location
+                        tempSet.add(loc);
                     }
                 }
                 SearchNode succ = new BlindMazeNode(tempSet, getCost()+1.0); //Make a node with the new belief state for this direction and add as a successor
@@ -72,8 +75,8 @@ public class BlindMazeProblem extends InformedSearchProblem {
         public boolean goalTest() { //the goal is reached if the belief state has shrank to 1, and that is the goal location
             if(beliefState.size() == 1){
                 boolean isGoal = true;
-                for (int[] loc : beliefState){ //only way to get to the only [x,y] in the set
-                    isGoal = ((loc[0] == xGoal) && (loc[1] == yGoal));
+                for (ArrayList<Integer> loc : beliefState){ //only way to get to the only [x,y] in the set
+                    isGoal = ((loc.get(0) == xGoal) && (loc.get(1) == yGoal));
                 }
                 return isGoal;
             }else{
@@ -86,38 +89,43 @@ public class BlindMazeProblem extends InformedSearchProblem {
         // can check for containment of states
         @Override
         public boolean equals(Object other) {
-            boolean equal = true; //assume they are equal at first
-            for (int[] i : beliefState) {
-                for (int[] j : ((BlindMazeNode) other).beliefState) {
-                    if (Arrays.equals(i, j)) {
-                        equal = true;
-                        break;
-                    } else {
-                        equal = false;
-                    }
-                }
-                if (!equal) {
-                    return false;
-                }
-            }
-            return true;
+            return (beliefState.equals(((BlindMazeNode)other).beliefState));
+//            boolean equal = true; //assume they are equal at first
+//            for (ArrayList<Integer> i : beliefState) {
+//                for (ArrayList<Integer> j : ((BlindMazeNode) other).beliefState) {
+//                    if (Arrays.equals(i, j)) {
+//                        equal = true;
+//                        break;
+//                    } else {
+//                        equal = false;
+//                    }
+//                }
+//                if (!equal) {
+//                    return false;
+//                }
+//            }
+//            return true;
         }
 
         @Override
         public int hashCode() {
             StringBuilder hashStr = new StringBuilder(); //make a stringBuilder because it is faster than the '+'
-            for(int[] loc : beliefState) {//for each location in the beliefState
-                hashStr.append(Integer.toString(loc[0]));
-                hashStr.append(Integer.toString(loc[1]));
+            //since set will not always iterate in the same order I convert to charArray and sort first
+            for(ArrayList<Integer> loc : beliefState) {//for each location in the beliefState
+                hashStr.append(Integer.toString(loc.get(0)));
+                hashStr.append(Integer.toString(loc.get(1)));
             }
-            return hashStr.toString().hashCode(); // makes a hashcode from the string
+            //since set will not always iterate in the same order I convert to charArray and sort first
+            char[] c = hashStr.toString().toCharArray();
+            Arrays.sort(c);
+            return new String(c).hashCode();
         }
 
         @Override
         public String toString() {
             String str = "{ Cost: " + getCost() + " | ";
-            for(int[] loc : beliefState){
-                str = str + "[" + loc[0] + "," + loc[1] + "] ";
+            for(ArrayList<Integer> loc : beliefState){
+                str = str + "[" + loc.get(0) + "," + loc.get(1) + "] ";
             }
             str = str + "}";
             return str;
@@ -133,8 +141,8 @@ public class BlindMazeProblem extends InformedSearchProblem {
         public double heuristic() {
             // min of manhattan distances for all possible states: that is optimistic!
             double minDist = startSet.size(); //initialize minDist to the size of the maze
-            for (int[] loc : beliefState){
-                double tempDist = getManhattan(loc, new int[]{xGoal,yGoal});
+            for (ArrayList<Integer> loc : beliefState){
+                double tempDist = getManhattan(new int[]{loc.get(0), loc.get(1)}, new int[]{xGoal,yGoal});
                 if(tempDist < minDist){
                     minDist =  tempDist;
                 }

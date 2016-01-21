@@ -1,6 +1,7 @@
 package assignment_mazeworld;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,18 +43,22 @@ public class BlindMazeDriver extends Application {
 
     // assumes maze and mazeView instance variables are already available
     private void runSearches() {
-        HashSet<int[]> start = new HashSet<int[]>();
+        HashSet<ArrayList<Integer>> start = new HashSet<ArrayList<Integer>>();
         //initialize the belief state to the maze locations except the walls
         for(int i=0; i<maze.getSize()[0]; i++) { //for the width of the maze
             for (int j = 0; j < maze.getSize()[1]; j++) {// for the height of the maze
                 if(maze.isLegal(i,j)){
-                    start.add(new int[]{i, j});
+                    ArrayList<Integer> temp = new ArrayList<Integer>();
+                    temp.add(0, i);
+                    temp.add(1, j);
+                    start.add(temp);
+//                    start.add(new int[]{i, j});
                 }
             }
         }
 
         int gx = 2;
-        int gy = 2;
+        int gy = 3;
 
 
         BlindMazeProblem mazeProblem = new BlindMazeProblem(maze,start, gx,
@@ -156,10 +161,10 @@ private class GameHandler implements EventHandler<ActionEvent> {
             lastXs = new int[beliefSize];
             lastYs = new int[beliefSize];
             int index = 0;
-            for(int[] loc : firstNode.beliefState){// for all possible locations of the agent
-                pieces[index] = mazeView.addPiece(loc[0], loc[1]);
-                lastXs[index] = loc[0];
-                lastYs[index] = loc[1];
+            for(ArrayList<Integer> loc : firstNode.beliefState){// for all possible locations of the agent
+                pieces[index] = mazeView.addPiece_SingleColor(loc.get(0), loc.get(1));
+                lastXs[index] = loc.get(0);
+                lastYs[index] = loc.get(1);
                 index += 1;
             }
         }
@@ -174,25 +179,44 @@ private class GameHandler implements EventHandler<ActionEvent> {
             if (currentMove < searchPath.size() && animationDone) {
                 BlindMazeNode mazeNode = (BlindMazeNode) searchPath
                         .get(currentMove);
+                //make pieces again since the new mazeNode will not necessarily have the old locations in it
+                for (Node n : pieces){
+                    mazeView.removePiece(n);
+                }
+
+
+                pieces = new Node[mazeNode.beliefState.size()];
+                lastXs = new int[mazeNode.beliefState.size()];
+                lastYs = new int[mazeNode.beliefState.size()];
+                int i = 0;
+                for(ArrayList<Integer> loc : mazeNode.beliefState){// for all possible locations of the agent
+                    pieces[i] = mazeView.addPiece_SingleColor(loc.get(0), loc.get(1));
+                    lastXs[i] = loc.get(0);
+                    lastYs[i] = loc.get(1);
+                    i += 1;
+                }
+
                 int index = 0;
-                for(int[] loc : mazeNode.beliefState){
-                    int dx = loc[0] - lastXs[index];
-                    int dy = loc[1] - lastYs[index];
+                for(ArrayList<Integer> loc : mazeNode.beliefState){
+                    int dx = loc.get(0) - lastXs[index];
+                    int dy = loc.get(1) - lastYs[index];
                     animateMove(pieces[index], dx, dy);
-                    lastXs[index] = loc[0];
-                    lastYs[index] = loc[1];
-                    index += 1;
+                    if(dx > 0 || dy <0)
+                        mazeView.removePiece(pieces[index]);
+                    lastXs[index] = loc.get(0);
+                    lastYs[index] = loc.get(1);
+                    index++;
                 }
                 currentMove++;
-            }
 
+            }
         }
 
         // move the piece n by dx, dy cells
         public void animateMove(Node n, int dx, int dy) {
             animationDone = false;
             TranslateTransition tt = new TranslateTransition(
-                    Duration.millis(300), n);
+                    Duration.millis(500), n);
             tt.setByX(PIXELS_PER_SQUARE * dx);
             tt.setByY(-PIXELS_PER_SQUARE * dy);
             // set a callback to trigger when animation is finished

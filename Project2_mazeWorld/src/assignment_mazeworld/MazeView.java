@@ -85,10 +85,26 @@ public class MazeView extends Group {
 		Circle piece = new Circle(squareCenterX(c), squareCenterY(r), radius);
 		piece.setFill(colors[currentColor]);
 		currentColor++;
-		
 		this.getChildren().add(piece);
 		return piece;
 		
+	}
+
+	// create a new piece on the board. with red color.
+	//  return the piece as a Node for use in animations
+	public Node addPiece_SingleColor(int c, int r) {
+
+		int radius = (int)(pixelsPerSquare * .4);
+
+		Circle piece = new Circle(squareCenterX(c), squareCenterY(r), radius);
+		piece.setFill(colors[3]);
+		this.getChildren().add(piece);
+		return piece;
+
+	}
+
+	public boolean removePiece(Object o){
+		return this.getChildren().remove(o);
 	}
 	
 	

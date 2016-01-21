@@ -90,21 +90,6 @@ public class BlindMazeProblem extends InformedSearchProblem {
         @Override
         public boolean equals(Object other) {
             return (beliefState.equals(((BlindMazeNode)other).beliefState));
-//            boolean equal = true; //assume they are equal at first
-//            for (ArrayList<Integer> i : beliefState) {
-//                for (ArrayList<Integer> j : ((BlindMazeNode) other).beliefState) {
-//                    if (Arrays.equals(i, j)) {
-//                        equal = true;
-//                        break;
-//                    } else {
-//                        equal = false;
-//                    }
-//                }
-//                if (!equal) {
-//                    return false;
-//                }
-//            }
-//            return true;
         }
 
         @Override

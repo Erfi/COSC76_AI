@@ -126,7 +126,7 @@ public class GeneralMazeProblem extends InformedSearchProblem {
                      if((state[turn][0] == x) && (state[turn][1] == y)) {// if the agent isn't it self (used in case this one is just chilling there and passing its turn)
                          continue;
                      }else{
-                         return false;
+                        return false;
                      }
                  }
              }

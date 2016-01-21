@@ -42,24 +42,24 @@ public class SimpleMazeDriver extends Application {
 		
 		int sx = 0;
 		int sy = 0;
-		int gx = 6;
-		int gy = 0;
+		int gx = 3;
+		int gy = 3;
 
 
 
 		SimpleMazeProblem mazeProblem = new SimpleMazeProblem(maze, sx, sy, gx,
 				gy);
 
-		List<SearchNode> bfsPath = mazeProblem.breadthFirstSearch();
-		animationPathList.add(new AnimationPath(mazeView, bfsPath));
-		System.out.println("BFS:  ");
-		mazeProblem.printStats();
+//		List<SearchNode> bfsPath = mazeProblem.breadthFirstSearch();
+//		animationPathList.add(new AnimationPath(mazeView, bfsPath));
+//		System.out.println("BFS:  ");
+//		mazeProblem.printStats();
 
-		List<SearchNode> dfsPath = mazeProblem
-				.depthFirstPathCheckingSearch(5000);
-		animationPathList.add(new AnimationPath(mazeView, dfsPath));
-		System.out.println("DFS:  ");
-		mazeProblem.printStats();
+//		List<SearchNode> dfsPath = mazeProblem
+//				.depthFirstPathCheckingSearch(5000);
+//		animationPathList.add(new AnimationPath(mazeView, dfsPath));
+//		System.out.println("DFS:  ");
+//		mazeProblem.printStats();
 
 		List<SearchNode> astarPath = mazeProblem.astarSearch();
 		animationPathList.add(new AnimationPath(mazeView, astarPath));

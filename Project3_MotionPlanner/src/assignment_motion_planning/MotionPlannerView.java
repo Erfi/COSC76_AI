@@ -36,7 +36,7 @@ public class MotionPlannerView extends Group {
     private static final int SCALE = 80;
     private static final boolean SAVE_IMAGES = false;
     private List<Shape> robotShapes;
-    private Duration duration = Duration.millis(300);  // speed of animation
+    private Duration duration = Duration.millis(100);  // speed of animation
     private Robot robot;
     private double height;
     private double width;

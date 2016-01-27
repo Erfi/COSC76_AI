@@ -12,8 +12,8 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class RobotArm extends Robot {
-    private static final double WIDTH = (1 + Math.sqrt(5.0)) / 2.0;
-    private static final double HEIGHT = 0.3;
+    private static final double WIDTH = (1 + Math.sqrt(5.0)) / 4.0;
+    private static final double HEIGHT = 0.2;
     private List<Shape> shapes;
     
     private static final Path2D.Double RECTANGLE = new Path2D.Double();

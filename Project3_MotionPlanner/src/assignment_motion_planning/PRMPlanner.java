@@ -16,9 +16,11 @@ import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.DoubleAccumulator;
 
 public class PRMPlanner extends MotionPlanner {
     private int numberOfAttempts = 10;
+    Map<Vector, Map<Vector, Double>> roadMap;
     
     /**
      * Constructor
@@ -30,19 +32,34 @@ public class PRMPlanner extends MotionPlanner {
     }
     
     @Override
+    /**
+     * returns the size of the map
+     * which is the sum of number of vertecies and the edges
+     */
     public int getSize() {
-        // YOU WILL WRITE THIS METHOD
-        return 0;
+        return ( roadMap.size()+ getEdges().size());
     }
 
     @Override
+    /**
+     * will declare the initialize the roadMap
+     */
     protected void setup() {
-        // YOU WILL WRITE THIS METHOD
+        if(roadMap == null) {
+            roadMap = new HashMap<Vector, Map<Vector, Double>>();
+        }
+        //add the start and goal node before starting to grow the graph!
+        addVertex(getStart());
+        addVertex((getGoal()));
     }
 
     @Override
     protected void growMap(int K) {
         // YOU WILL WRITE THIS METHOD
+        assert(K>0);
+        for(int i=0; i<K; i++) {
+            addVertex(generateFreeConfiguration());
+        }
     }
     
     /**
@@ -51,12 +68,27 @@ public class PRMPlanner extends MotionPlanner {
      */
     @SuppressWarnings("boxing")
     private void addVertex(Vector free) {
-        // YOU WILL WRITE THIS METHOD
+        if(free != null){
+            if(!roadMap.containsKey(free)) {
+                roadMap.put(free, new HashMap<Vector, Double>());//add the free vertex to the roadMap
+                List<Vector> neighbors = this.nearestKNeighbors(roadMap.keySet(), free, kValue());
+                for (Vector v : neighbors) {
+                    if (getEnvironment().isSteerable(getRobot(), free, v, RESOLUTION)) {
+                        roadMap.get(free).put(v, getRobot().getMetric(free, v)); // add neighbor to free's adjacency list
+                    }
+                    if (getEnvironment().isSteerable(getRobot(), v, free, RESOLUTION)) {
+                        roadMap.get(v).put(free, getRobot().getMetric(v, free));// add free to neighbor's adjacency list
+                    }
+                }
+            }
+        }
     }
 
     @Override
     protected void reset() {
-        // YOU WILL WRITE THIS METHOD
+        if(roadMap != null) {
+            roadMap.clear();
+        }
     }   
     
     /**
@@ -74,7 +106,14 @@ public class PRMPlanner extends MotionPlanner {
      * @return a free configuration if possible, and null otherwise
      */
     private Vector generateFreeConfiguration() {
-        // YOU WILL WRITE THIS METHOD
+        int count = 0;
+        while(count < numberOfAttempts) {
+            Vector v = getRobot().getRandomConfiguration(getEnvironment(), random);
+            if (getEnvironment().isValidConfiguration(getRobot(), v)) {
+                return v;
+            }
+            count++;
+        }
         return null;
     }
     
@@ -147,10 +186,10 @@ public class PRMPlanner extends MotionPlanner {
             double cost = node.getCost();
             if (goal.equals(configuration))
                 return backChain(node);
-            
-            for (Vector config : getSuccessors(configuration)){
+            Collection<Vector> configs = getSuccessors(configuration);
+            for (Vector config : configs){
                 double heuristic = getRobot().getMetric(config, goal);
-                double newCost = 0.0; // YOU NEED TO MODIFY THIS LINE
+                double newCost = cost+1; // YOU NEED TO MODIFY THIS LINE
                 Node test = map.get(config);
                 
                 if (test != null) {
@@ -173,8 +212,7 @@ public class PRMPlanner extends MotionPlanner {
      * @return a collection of successors
      */
     private Collection<Vector> getSuccessors(Vector configuration) {
-        // YOU WILL WRITE THIS METHOD
-        return null;
+        return nearestKNeighbors(roadMap.keySet(),configuration, kValue());
     }
     
     /**

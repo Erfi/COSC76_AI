@@ -68,19 +68,30 @@ public class PRMPlanner extends MotionPlanner {
      */
     @SuppressWarnings("boxing")
     private void addVertex(Vector free) {
-        if(free != null){
-            if(!roadMap.containsKey(free)) {
-                roadMap.put(free, new HashMap<Vector, Double>());//add the free vertex to the roadMap
-                List<Vector> neighbors = this.nearestKNeighbors(roadMap.keySet(), free, kValue());
-                for (Vector v : neighbors) {
-                    if (getEnvironment().isSteerable(getRobot(), free, v, RESOLUTION)) {
-                        roadMap.get(free).put(v, getRobot().getMetric(free, v)); // add neighbor to free's adjacency list
-                    }
-                    if (getEnvironment().isSteerable(getRobot(), v, free, RESOLUTION)) {
-                        roadMap.get(v).put(free, getRobot().getMetric(v, free));// add free to neighbor's adjacency list
-                    }
-                }
+        if(free != null) {
+            if (!roadMap.containsKey(free)) {
+                roadMap.put(free, new HashMap<Vector, Double>());
             }
+            List<Vector> neighbors = this.nearestKNeighbors(roadMap.keySet(), free, kValue());
+            for (Vector v : neighbors) {
+                makeNeighbors(free, v);
+            }
+        }
+    }
+
+    /**
+     * Auxilary mathod to be use in the addVertex() method
+     * in order to add a and b in each others adjacency list if the
+     * path between them is steerable
+     * @param a
+     * @param b
+     */
+    private void makeNeighbors(Vector a, Vector b){
+        if(getEnvironment().isSteerable(getRobot(),a, b, RESOLUTION)){
+            roadMap.get(a).put(b, getRobot().getMetric(a,b));
+        }
+        if(getEnvironment().isSteerable(getRobot(),b,a, RESOLUTION)){
+            roadMap.get(b).put(a,getRobot().getMetric(b,a));
         }
     }
 
@@ -212,7 +223,7 @@ public class PRMPlanner extends MotionPlanner {
      * @return a collection of successors
      */
     private Collection<Vector> getSuccessors(Vector configuration) {
-        return nearestKNeighbors(roadMap.keySet(),configuration, kValue());
+        return roadMap.get(configuration).keySet();
     }
     
     /**

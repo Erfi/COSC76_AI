@@ -55,7 +55,6 @@ public class PRMPlanner extends MotionPlanner {
 
     @Override
     protected void growMap(int K) {
-        // YOU WILL WRITE THIS METHOD
         assert(K>0);
         for(int i=0; i<K; i++) {
             addVertex(generateFreeConfiguration());

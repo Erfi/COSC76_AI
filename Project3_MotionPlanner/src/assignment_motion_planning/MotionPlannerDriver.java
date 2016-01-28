@@ -9,12 +9,12 @@ import javafx.stage.Stage;
 
 public class MotionPlannerDriver extends Application {
     private static final String TITLE = "CS 76 Motion Planner";
-    private static final String PLANAR_ROBOT_ENVIRONMENT = "planar_robot_environment";
+    private static final String PLANAR_ROBOT_ENVIRONMENT = "empty";
     private static final String ROBOT_ARM_ENVIRONMENT = "robot_arm_environment_hard";
     private static final String EMPTY = "empty";
     private static final String HANOVER = "hanover";
-    private static final boolean IS_PLANAR_ROBOT = false;  // Change this if you want to switch robot
-    private static boolean DRAW_EDGES = false;
+    private static final boolean IS_PLANAR_ROBOT = true;  // Change this if you want to switch robot
+    private static boolean DRAW_EDGES = true;
     private static final Environment ENVIRONMENT;
     private static final Vector START;
     private static final Vector GOAL;
@@ -26,8 +26,8 @@ public class MotionPlannerDriver extends Application {
     static {
         if (IS_PLANAR_ROBOT) {
             ENVIRONMENT = new Environment(PLANAR_ROBOT_ENVIRONMENT);
-            START = new Vector(-4, -4, 0);
-            GOAL = new Vector(4, 4, 0);
+            START = new Vector(0, 0, 0);
+            GOAL = new Vector(1, 1, 0);
             //ROBOT = PlanarRobot.getDubinsCar();
             //ROBOT = PlanarRobot.getReedsSheppCar();
             ROBOT = PlanarRobot.getDifferentialDrive();

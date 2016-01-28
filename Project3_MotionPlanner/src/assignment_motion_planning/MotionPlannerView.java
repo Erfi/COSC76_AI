@@ -31,6 +31,7 @@ import javafx.animation.KeyValue;
 import javax.imageio.ImageIO;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.layout.StackPane;
+import javafx.util.Pair;
 
 public class MotionPlannerView extends Group {
     private static final int SCALE = 80;
@@ -47,7 +48,7 @@ public class MotionPlannerView extends Group {
      * Constructor
      * @param primaryStage the stage
      * @param environment  the workspace
-     * @param robot        the robot
+     * @param r        the robot
      */
     public MotionPlannerView(Stage primaryStage, StackPane rot, Environment environment, Robot r) {
         this.robot = r;
@@ -78,8 +79,8 @@ public class MotionPlannerView extends Group {
      * Draw edges
      * @param edges the edges to be drawn
      */
-    public void drawEdges(Map<Point2D, Point2D> edges) {
-        for (Map.Entry<Point2D, Point2D> entry : edges.entrySet()) {
+    void drawEdges(List<Pair<Point2D, Point2D>> edges) {
+        for (Pair<Point2D, Point2D> entry : edges) {
             Point2D from = entry.getKey();
             Point2D to = entry.getValue();
             Line line = new Line(from.getX(), from.getY(), to.getX(), to.getY());
@@ -166,9 +167,9 @@ public class MotionPlannerView extends Group {
     /**
      * Generate translation and rotation transitions
      * @param shape  the shape to be moved
-     * @param x      the desired x-coordinate
-     * @param y      the desired y-coordinate
-     * @param theta  the desired angle in degree
+     * @param dx      the desired x-coordinate
+     * @param dy      the desired y-coordinate
+     * @param dtheta  the desired angle in degree
      * @return a list of translation and rotation transitions
      */
     private List<Animation> getAnimation(Shape shape, double dx, double dy, double dtheta) {

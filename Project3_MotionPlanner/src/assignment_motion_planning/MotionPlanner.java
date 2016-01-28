@@ -10,16 +10,17 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javafx.geometry.Point2D;
+import javafx.util.Pair;
 
 public abstract class MotionPlanner {
     private static final Logger logger = Logger.getLogger(MotionPlanner.class.getName());
     protected static final double RESOLUTION = 0.01; // resolution for collision detection
-    protected Random random = new Random(0); // Fix the seed to make it easier to debug
+    protected Random random = new Random(); // Fix the seed to make it easier to debug
     private Robot robot;    // the robot
     private Vector start;   // start configuration
     private Vector goal;    // goal configuration
     private Environment environment;  // workspace
-    private int defaultSize = 100;  // default size of data structures
+    private int defaultSize = 200;  // default size of data structures
     private int numberOfRandomSample = 0;
     private int numberOfFreeRandomSample = 0;
     
@@ -37,7 +38,7 @@ public abstract class MotionPlanner {
      * Get the edges
      * @return the edges
      */
-    public Map<Point2D, Point2D> getEdges() {
+    public List<Pair<Point2D, Point2D>> getEdges() {
         return null;
     }
     

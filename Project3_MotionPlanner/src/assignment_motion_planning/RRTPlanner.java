@@ -12,6 +12,7 @@ import java.util.*;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.util.Pair;
 
 public class RRTPlanner extends MotionPlanner {
     private static final double DEFAULT_DELTA = 0.1;  // Duration for the control
@@ -21,8 +22,10 @@ public class RRTPlanner extends MotionPlanner {
     //=========Edge Class===========
     private class Edge{
         Vector parentVector = null; //by default
-        public Edge(Vector P){
+        Trajectory parentTrajectory = null;
+        public Edge(Vector P, Trajectory T){
             parentVector = P;
+            parentTrajectory = T;
         }
     }
     
@@ -36,16 +39,17 @@ public class RRTPlanner extends MotionPlanner {
     }
     
     @Override
-    public Map<Point2D, Point2D> getEdges() {
-        Map<Point2D, Point2D> edgeMap = new HashMap<Point2D, Point2D>();
+    public List<Pair<Point2D, Point2D>> getEdges() {
+        List<Pair<Point2D, Point2D>> edgeList = new ArrayList<Pair<Point2D, Point2D>>();
         for (Vector v : parents.keySet()){
             if(parents.get(v).parentVector != null) { //the start node has no parents
                 Point2D childPoint = new Point2D(v.get(0), v.get(1));
                 Point2D parentPoint = new Point2D(parents.get(v).parentVector.get(0), parents.get(v).parentVector.get(1));
-                edgeMap.put(childPoint, parentPoint);
+                Pair<Point2D,Point2D> p = new Pair<Point2D, Point2D>(childPoint, parentPoint);
+                edgeList.add(p);
             }
         }
-        return edgeMap;
+        return edgeList;
     }
     
     @Override
@@ -61,7 +65,7 @@ public class RRTPlanner extends MotionPlanner {
         if(finalCandidates == null){
             finalCandidates = new ArrayList<Vector>();
         }
-        parents.put(getStart(), new Edge(null));
+        parents.put(getStart(), new Edge(null,null));
     }
     
     @Override
@@ -84,13 +88,14 @@ public class RRTPlanner extends MotionPlanner {
     @SuppressWarnings("boxing")
     private boolean newConf(Vector qnear, double duration) { //consider checking if the new configuration is valid
         Vector newControl = getRobot().getRandomControl(random);
-        if(getEnvironment().isValidMotion(getRobot(), qnear, new Trajectory(newControl, DEFAULT_DELTA),RESOLUTION )){
-            Vector child = getRobot().move(qnear, newControl, DEFAULT_DELTA);
+        Trajectory newTrajectory = new Trajectory(newControl, DEFAULT_DELTA*5);
+        if(getEnvironment().isValidMotion(getRobot(), qnear, newTrajectory, RESOLUTION )){
+            Vector child = getRobot().move(qnear, newControl, DEFAULT_DELTA*5);
             if(!parents.containsKey(child)) {
-                parents.put(child, new Edge(qnear));
+                parents.put(child, new Edge(qnear, newTrajectory));
                 if(child.equals(nearestNeighbor(parents.keySet(), getGoal()))){//if the child's nearest neighbor happened to be the goal vertex, then add the child as one of the final candidates for backchaining
                     finalCandidates.add(child);
-                    System.out.println("found a candidate!");
+//                    System.out.println("found a candidate!");
                 }
                 return true;
             }else{
@@ -122,11 +127,10 @@ public class RRTPlanner extends MotionPlanner {
      */
     private Trajectory convertToTrajectory(List<Vector> path) {
         Trajectory result = new Trajectory();
-        Vector previous = path.get(0);
-        for (int i = 1; i < path.size(); ++i) {
-            Vector next = path.get(i);
-            result.append(getRobot().steer(previous, next));
-            previous = next;
+        for(Vector v : path){
+            if(parents.get(v).parentTrajectory != null) {// start vertex will have null parents
+                result.append(parents.get(v).parentTrajectory);
+            }
         }
         return result;
     }

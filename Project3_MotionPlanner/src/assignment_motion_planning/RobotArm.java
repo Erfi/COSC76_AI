@@ -100,9 +100,8 @@ public class RobotArm extends Robot {
         assert(q1.getDimension() == getDimension());
         assert(q2.getDimension() == getDimension());
         double result = 0.0;
-        for (int i = 0; i < getDimension(); ++i) {
-            result += Robot.getAbsDiff(q1.get(i), q2.get(i));
-        }
+        for (int i = 0; i < getDimension(); ++i)
+            result = Math.max(result, Robot.getAbsDiff(q1.get(i), q2.get(i)));
         return result;
     }
 

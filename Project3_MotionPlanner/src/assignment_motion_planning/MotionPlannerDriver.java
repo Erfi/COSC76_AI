@@ -13,7 +13,7 @@ public class MotionPlannerDriver extends Application {
     private static final String ROBOT_ARM_ENVIRONMENT = "robot_arm_environment_hard";
     private static final String EMPTY = "empty";
     private static final String HANOVER = "hanover";
-    private static final boolean IS_PLANAR_ROBOT = false;  // Change this if you want to switch robot
+    private static final boolean IS_PLANAR_ROBOT = true;  // Change this if you want to switch robot
     private static boolean DRAW_EDGES = true;
     private static final Environment ENVIRONMENT;
     private static final Vector START;

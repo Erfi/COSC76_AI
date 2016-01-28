@@ -17,7 +17,6 @@ import javafx.util.Pair;
 public class RRTPlanner extends MotionPlanner {
     private static final double DEFAULT_DELTA = 0.1;  // Duration for the control
     private Map<Vector, Edge> parents = null;
-    private List<Vector> finalCandidates = null;
 
     //=========Edge Class===========
     private class Edge{
@@ -62,21 +61,15 @@ public class RRTPlanner extends MotionPlanner {
         if(parents == null){
             parents = new HashMap<Vector, Edge>();
         }
-        if(finalCandidates == null){
-            finalCandidates = new ArrayList<Vector>();
-        }
         parents.put(getStart(), new Edge(null,null));
     }
     
     @Override
     protected void growMap(int K) {
-//        System.out.println("entering: growMap");
         for (int i=0 ; i<K; i++) {
             Vector qNear = nearestNeighbor(parents.keySet(),getRobot().getRandomConfiguration(getEnvironment(), random));
             newConf(qNear, DEFAULT_DELTA);
-//            System.out.println("done with one iteration of growMap. i : " + i);
         }
-//        System.out.println("exiting: growMap");
     }
 
     /**
@@ -86,17 +79,13 @@ public class RRTPlanner extends MotionPlanner {
      * @return true if one new configuration is inserted, and false otherwise
      */
     @SuppressWarnings("boxing")
-    private boolean newConf(Vector qnear, double duration) { //consider checking if the new configuration is valid
+    private boolean newConf(Vector qnear, double duration) {
         Vector newControl = getRobot().getRandomControl(random);
         Trajectory newTrajectory = new Trajectory(newControl, DEFAULT_DELTA*5);
         if(getEnvironment().isValidMotion(getRobot(), qnear, newTrajectory, RESOLUTION )){
             Vector child = getRobot().move(qnear, newControl, DEFAULT_DELTA*5);
             if(!parents.containsKey(child)) {
                 parents.put(child, new Edge(qnear, newTrajectory));
-                if(child.equals(nearestNeighbor(parents.keySet(), getGoal()))){//if the child's nearest neighbor happened to be the goal vertex, then add the child as one of the final candidates for backchaining
-                    finalCandidates.add(child);
-//                    System.out.println("found a candidate!");
-                }
                 return true;
             }else{
                 return false;
@@ -108,15 +97,7 @@ public class RRTPlanner extends MotionPlanner {
     @SuppressWarnings("boxing")
     @Override
     protected Trajectory findPath() {
-        double minDist = Double.POSITIVE_INFINITY;
-        Vector closestVertex = null;
-        for(Vector v : finalCandidates){
-            double newMin = getRobot().getMetric(v, getGoal());
-            if( newMin < minDist){
-                minDist = newMin;
-                closestVertex = v;
-            }
-        }
+        Vector closestVertex = nearestNeighbor(parents.keySet(), getGoal());
         return closestVertex != null ? convertToTrajectory(backChain(closestVertex)) : null;
     }
 

@@ -28,10 +28,10 @@ public class MotionPlannerDriver extends Application {
             ENVIRONMENT = new Environment(PLANAR_ROBOT_ENVIRONMENT);
             START = new Vector(-4, -4, 0);
             GOAL = new Vector(4, 4, 0);
-            ROBOT = PlanarRobot.getDubinsCar();
+//            ROBOT = PlanarRobot.getDubinsCar();
 //            ROBOT = PlanarRobot.getReedsSheppCar();
 //            ROBOT = PlanarRobot.getDifferentialDrive();
-//            ROBOT = PlanarRobot.getOmnidirectionalRobot();
+            ROBOT = PlanarRobot.getOmnidirectionalRobot();
         } else {
             ENVIRONMENT = new Environment(ROBOT_ARM_ENVIRONMENT);
             START = new Vector(0.0, 0.0, 0.0, 0.0, 0.0);

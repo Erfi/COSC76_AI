@@ -90,7 +90,9 @@ public class PlanarRobot extends Robot {
         assert(q1.getDimension() == getDimension());
         assert(q2.getDimension() == getDimension());
         // Math.hypot is slower but more accurate than Math.sqrt
-        double distance = Math.hypot(q1.get(0) - q2.get(0), q1.get(1) - q2.get(1));
+        double a = q1.get(0) - q2.get(0);
+        double b = q1.get(1) - q2.get(1);
+        double distance = Math.sqrt(a*a + b*b);
         return Math.max(distance, WEIGHT_FOR_ANGLE * Robot.getAbsDiff(q1.get(2), q2.get(2)));
     }
     

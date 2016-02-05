@@ -2,16 +2,20 @@ package chai;
 
 import java.util.Random;
 
+import chesspresso.move.IllegalMoveException;
 import chesspresso.move.Move;
 import chesspresso.position.Position;
 
 public class AlphaAI implements ChessAI {
-    private final static int MAXIMUMDEPTH = 5; //maximum depth for the search
+    private final static int MAXIMUMDEPTH = 1; //maximum depth for the search
 
     public short getMove(Position position) {
-        short [] moves = position.getAllMoves();
-        short move = moves[new Random().nextInt(moves.length)];
-
+        short move = 0;
+        try{
+             move = minimax(position);
+        } catch (IllegalMoveException e) {
+            e.printStackTrace();
+        }
         return move;
     }
 
@@ -39,22 +43,44 @@ public class AlphaAI implements ChessAI {
         }
     }
 
-    public short minimax(Position position){
+    public short minimax(Position position) throws IllegalMoveException {
         int maxValue = Integer.MIN_VALUE/2;
         short bestMove = 0;
         for(short move : position.getAllMoves()){
-//            position.doMove(move);
-//            if (min_value(position) > )
+            position.doMove(move);
+            if (min_value(position) > maxValue ){
+                bestMove = move;
+            }else{
+                position.undoMove();
+            }
         }
-        return 0;
+        return bestMove;
     }
 
-    public int max_value(Position position){
-        return 0;
+    public int max_value(Position position) throws IllegalMoveException {
+        if(isCutOff(position, MAXIMUMDEPTH)){
+            return utility(position);
+        }
+        int value = Integer.MIN_VALUE/2;
+        for(short move : position.getAllMoves()){
+            position.doMove(move);
+            value = Math.max(value,min_value(position));
+            position.undoMove();
+        }
+        return value;
     }
 
-    public int min_value(Position position){
-        return 0;
+    public int min_value(Position position) throws IllegalMoveException {
+        if(isCutOff(position, MAXIMUMDEPTH)){
+            return utility(position);
+        }
+        int value = Integer.MAX_VALUE/2;
+        for(short move : position.getAllMoves()){
+            position.doMove(move);
+            value = Math.min(value, max_value(position));
+            position.undoMove();
+        }
+        return value;
     }
 
 }

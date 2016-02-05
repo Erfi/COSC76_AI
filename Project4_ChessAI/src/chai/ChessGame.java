@@ -13,8 +13,8 @@ public class ChessGame {
 	public int columns = 8;
 
 	public ChessGame() {
-		position = new Position("8/5kr1/8/8/8/3KN3/8/8 w KQkq - 0 1");
-//				"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+		position = new Position(//"8/5kr1/8/8/8/3KN3/8/8 w KQkq - 0 1");
+				"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
 
 	}

@@ -129,11 +129,12 @@ public class ChessClient extends Application {
 					System.out.println("Win for the White");
 					timeline.stop();
 					return;
-				}else if (game.position.isStaleMate()) {
-					System.out.println("It's a stalemate!");
-					timeline.stop();
-					return;
 				}
+//				}else if (game.position.isStaleMate()) {
+//					System.out.println("It's a stalemate!");
+//					timeline.stop();
+//					return;
+//				}
 			}
 
 

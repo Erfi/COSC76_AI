@@ -7,22 +7,22 @@ import chesspresso.move.Move;
 import chesspresso.position.Position;
 
 public class AlphaAI implements ChessAI {
-    private final static int MAXIMUMDEPTH = 3; //maximum depth for the search
+    private final static int MAXIMUMDEPTH = 4; //maximum depth for the search
 
     public short getMove(Position position) {
         short move = Move.NO_MOVE;
         try{
-             move = minimax(position, MAXIMUMDEPTH);
+             move = ID_minimax(position, MAXIMUMDEPTH);
         } catch (IllegalMoveException e) {
             e.printStackTrace();
         }
         return move;
     }
 
-    public boolean isCutOff(Position position, int depth){
+    public boolean isCutOff(Position position, int currentDepth, int maxDepth){
         if(position.isTerminal()){
             return true;
-        }else if(depth >= MAXIMUMDEPTH){
+        }else if(currentDepth > maxDepth){
             return true;
         }else{
             return false;
@@ -44,7 +44,7 @@ public class AlphaAI implements ChessAI {
         }
     }
 
-    public int eval(Position position){
+    public int eval(Position position){ // I wrote this outside of utility() in case I wanted to have different eval() funcitions
         return position.getMaterial();
     }
 
@@ -52,52 +52,66 @@ public class AlphaAI implements ChessAI {
     public short ID_minimax(Position position, int maxDepth) throws IllegalMoveException {
         int currentDepth = 0;
         short bestMove = Move.NO_MOVE;
+        int bestMoveUtility = Integer.MIN_VALUE/2;
+        short tempMove;
+        int tempUtility;
+
         for (int i=0; i<maxDepth; i++){
-            bestMove = minimax(position, currentDepth+i);
+            tempMove = minimax(position, currentDepth+i);
+
+            position.doMove(tempMove);
+            tempUtility = utility(position);
+            System.out.println("bestmove at depth " + i + " is: " + tempMove + " with utility value of: " + tempUtility);
+            if(tempUtility > bestMoveUtility){
+                bestMove = tempMove;
+            }
+            position.undoMove();
         }
         return bestMove;
     }
 
     public short minimax(Position position, int maxDepth) throws IllegalMoveException {
         int maxValue = Integer.MIN_VALUE/2;
-        int depth = 0;
+        int currentDepth = 0;
         short bestMove = Move.NO_MOVE;
         for(short move : position.getAllMoves()){
             position.doMove(move);
-            int newVal = min_value(position, depth);
+            int newVal = min_value(position, currentDepth, maxDepth);
             if (newVal > maxValue ){
                 bestMove = move;
                 maxValue = newVal;
             }
             position.undoMove();
         }
-        System.out.println("Minimax: " + maxValue + " " + bestMove);
+//        System.out.println("Minimax: " + maxValue + " bestmove " + bestMove);
         return bestMove;
     }
 
-    public int max_value(Position position, int maxDepth) throws IllegalMoveException {
-        if(isCutOff(position, maxDepth)){
-//            System.out.println("Max_value returning: " + utility(position));
+    public int max_value(Position position, int currentDepth, int maxDepth) throws IllegalMoveException {
+//        System.out.println("max_value at depth: " + maxDepth);
+        if(isCutOff(position, currentDepth, maxDepth)){
+//            System.out.println("Max_value returning: " + utility(position) + "Player: " + position.getToPlay());
             return utility(position);
         }
         int value = Integer.MIN_VALUE/2;
         for(short move : position.getAllMoves()){
             position.doMove(move);
-            value = Math.max(value,min_value(position, maxDepth+1));
+            value = Math.max(value,min_value(position, currentDepth+1, maxDepth));
             position.undoMove();
         }
         return value;
     }
 
-    public int min_value(Position position, int maxDepth) throws IllegalMoveException {
-        if(position.isTerminal()){
+    public int min_value(Position position, int currentDepth, int maxDepth) throws IllegalMoveException {
+//        System.out.println("min_value at depth: " + maxDepth);
+        if(isCutOff(position, currentDepth, maxDepth)){
 //            System.out.println("Min_value returning: " + utility(position) + "Player: " + position.getToPlay());
             return utility(position);
         }
         int value = Integer.MAX_VALUE/2;
         for(short move : position.getAllMoves()){
             position.doMove(move);
-            value = Math.min(value, max_value(position, maxDepth+1));
+            value = Math.min(value, max_value(position, currentDepth+1, maxDepth));
             position.undoMove();
         }
         return value;

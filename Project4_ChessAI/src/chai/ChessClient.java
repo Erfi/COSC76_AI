@@ -76,6 +76,7 @@ public class ChessClient extends Application {
 		// from a server, depending on which type is used.
 		moveMaker = new MoveMaker[2];
 		moveMaker[Chess.BLACK] = new AIMoveMaker(new AlphaAI());
+//		moveMaker[Chess.WHITE] = new AIMoveMaker(new AlphaAI());
 		moveMaker[Chess.WHITE] = new TextFieldMoveMaker();
 
 		VBox vb = new VBox();
@@ -119,23 +120,22 @@ public class ChessClient extends Application {
 			MoveMaker mover = moveMaker[game.position.getToPlay()];
 
 			//stop the game if it is over player 0 is white and player 1 is black
-			if(game.position.isTerminal()){//can be mate or stalemate
-				if(game.position.isStaleMate()){
-					System.out.println("It's a draw!");
-					timeline.stop();
-					return;
-				}
-				if(game.position.isMate() && game.position.getToPlay() == 0){
+			if(game.position.isTerminal()) {//can be mate or stalemate
+				if (game.position.isMate() && game.position.getToPlay() == 0) {
 					System.out.println("Win for the Black");
 					timeline.stop();
 					return;
-				}
-				if(game.position.isMate() && game.position.getToPlay() == 1){
+				} else if (game.position.isMate() && game.position.getToPlay() == 1) {
 					System.out.println("Win for the White");
+					timeline.stop();
+					return;
+				}else if (game.position.isStaleMate()) {
+					System.out.println("It's a stalemate!");
 					timeline.stop();
 					return;
 				}
 			}
+
 
 
 

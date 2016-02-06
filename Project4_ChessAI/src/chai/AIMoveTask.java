@@ -2,6 +2,8 @@ package chai;
 
 import javafx.concurrent.Task;
 import chesspresso.position.Position;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 
 public class AIMoveTask extends Task<Short> {
 	
@@ -17,8 +19,8 @@ public class AIMoveTask extends Task<Short> {
 
 	@Override
 	protected Short call() throws Exception {
-		return ai.getMove(position);
+		Position posCopy = position;
+		return ai.getMove(posCopy);
 	
 	}
-	
 }

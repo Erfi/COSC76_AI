@@ -25,7 +25,7 @@ public class BoardView extends Group {
 	
 	// the size of the font used to draw pieces,
 	//   relative to the size of the square
-	private final static double FONT_SCALE = .75;
+		private final static double FONT_SCALE = .75;
 	
 	private int pixelsPerSquare;
 	private ChessGame game;
@@ -197,7 +197,16 @@ public class BoardView extends Group {
 			pieceLabels[toRookSqi] = pieceLabels[fromRookSqi];
 			pieceLabels[fromRookSqi] = null;
 		}
-		
+
+		//pawn promotion move
+		if (Move.isPromotion(move)) {
+			int piece = Move.getPromotionPiece(move);
+			//this is what the pawn to be promoted to
+			short stone = (short)Chess.pieceToStone(piece,
+					this.game.position.getToPlay());
+			l.setText(unicodePiece.get(stone));
+		}
+
 		// update the list of piece Labels
 		pieceLabels[toSqi] = pieceLabels[fromSqi];
 		pieceLabels[fromSqi] = null;

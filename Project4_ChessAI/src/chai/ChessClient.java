@@ -36,6 +36,8 @@ public class ChessClient extends Application {
 
 	MoveMaker[] moveMaker;
 
+	Timeline timeline;
+
 	public static void main(String[] args) {
 
 		launch(args);
@@ -88,7 +90,7 @@ public class ChessClient extends Application {
 		primaryStage.show();
 
 		// sets the game world's game loop (Timeline)
-		Timeline timeline = new Timeline(1.0);
+		timeline = new Timeline(1.0);
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.getKeyFrames().add(
 				new KeyFrame(Duration.seconds(.05), new GameHandler()));
@@ -115,6 +117,41 @@ public class ChessClient extends Application {
 			// created:
 
 			MoveMaker mover = moveMaker[game.position.getToPlay()];
+
+			//stop the game if it is over player 0 is white and player 1 is black
+			if(game.position.isTerminal()){//can be mate or stalemate
+				if(game.position.isStaleMate()){
+					System.out.println("It's a draw!");
+					timeline.stop();
+					return;
+				}
+				if(game.position.isMate() && game.position.getToPlay() == 0){
+					System.out.println("Win for the Black");
+					timeline.stop();
+					return;
+				}
+				if(game.position.isMate() && game.position.getToPlay() == 1){
+					System.out.println("Win for the White");
+					timeline.stop();
+					return;
+				}
+			}
+
+
+
+//			if(game.position.isTerminal() && game.position.getToPlay() == 0){//black won!
+//				System.out.println("Win for the Black");
+//				timeline.stop();
+//				return;
+//			}else if(game.position.isTerminal() && game.position.getToPlay() == 1){//white won!
+//				System.out.println("Win for the white!");
+//				timeline.stop();
+//				return;
+//			}else if(game.position.isStaleMate()){ //its a draw
+//				System.out.println("It's a draw!");
+//				timeline.stop();
+//				return;
+//			}
 
 			if (mover.getState() == Worker.State.READY) {
 				mover.start(game.position);

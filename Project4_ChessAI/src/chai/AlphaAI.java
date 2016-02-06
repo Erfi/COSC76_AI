@@ -7,10 +7,10 @@ import chesspresso.move.Move;
 import chesspresso.position.Position;
 
 public class AlphaAI implements ChessAI {
-    private final static int MAXIMUMDEPTH = 1; //maximum depth for the search
+    private final static int MAXIMUMDEPTH = 5; //maximum depth for the search
 
     public short getMove(Position position) {
-        short move = 0;
+        short move = Move.NO_MOVE;
         try{
              move = minimax(position);
         } catch (IllegalMoveException e) {
@@ -33,51 +33,54 @@ public class AlphaAI implements ChessAI {
         if(position.isStaleMate()){ // draw
             return 0;
         }else if(position.isTerminal()){ // terminal state
-            if(position.getToPlay() == 0){
+            if(position.getToPlay() == 1){
                 return Integer.MAX_VALUE/2;
             }else{
                 return  Integer.MIN_VALUE/2;
             }
         }else{//not a terminal state or draw --> return a value between max(ish) and min(ish)
-            return new Random().nextInt(Integer.MAX_VALUE/2 - Integer.MIN_VALUE/2) + Integer.MIN_VALUE/2;
+            int val = new Random().nextInt(Integer.MAX_VALUE/2 - Integer.MIN_VALUE/2) + Integer.MIN_VALUE/2;
+            return val;
         }
     }
 
     public short minimax(Position position) throws IllegalMoveException {
         int maxValue = Integer.MIN_VALUE/2;
-        short bestMove = 0;
+        int depth = 0;
+        short bestMove = Move.NO_MOVE;
         for(short move : position.getAllMoves()){
             position.doMove(move);
-            if (min_value(position) > maxValue ){
+            int newVal = min_value(position, depth+1);
+            if (newVal > maxValue ){
                 bestMove = move;
-            }else{
-                position.undoMove();
+                maxValue = newVal;
             }
+            position.undoMove();
         }
         return bestMove;
     }
 
-    public int max_value(Position position) throws IllegalMoveException {
-        if(isCutOff(position, MAXIMUMDEPTH)){
+    public int max_value(Position position, int depth) throws IllegalMoveException {
+        if(isCutOff(position, depth)){
             return utility(position);
         }
         int value = Integer.MIN_VALUE/2;
         for(short move : position.getAllMoves()){
             position.doMove(move);
-            value = Math.max(value,min_value(position));
+            value = Math.max(value,min_value(position, depth+1));
             position.undoMove();
         }
         return value;
     }
 
-    public int min_value(Position position) throws IllegalMoveException {
-        if(isCutOff(position, MAXIMUMDEPTH)){
+    public int min_value(Position position, int depth) throws IllegalMoveException {
+        if(isCutOff(position, depth)){
             return utility(position);
         }
         int value = Integer.MAX_VALUE/2;
         for(short move : position.getAllMoves()){
             position.doMove(move);
-            value = Math.min(value, max_value(position));
+            value = Math.min(value, max_value(position, depth+1));
             position.undoMove();
         }
         return value;

@@ -14,8 +14,8 @@ public class ChessGame {
 
 	public ChessGame() {
 	position = new Position(
-			"1r3k2/p1rR1P1p/6p1/2b5/2q5/2B4P/PP3QP1/3R2K1 w KQkq - 0 1"); // a puzzle from chess.com
-//			"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // original configuration
+//			"1r3k2/p1rR1P1p/6p1/2b5/2q5/2B4P/PP3QP1/3R2K1 w KQkq - 0 1"); // a puzzle from chess.com
+			"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // original configuration
 //			"2r2k2/8/8/8/8/8/K6r/8 w KQkq - 0 1"); //
 
 

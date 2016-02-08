@@ -14,8 +14,8 @@ public class ChessGame {
 
 	public ChessGame() {
 	position = new Position(
-//			"1r3k2/p1rR1P1p/6p1/2b5/2q5/2B4P/PP3QP1/3R2K1 w KQkq - 0 1"); // a puzzle from chess.com
-			"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // original configuration
+			"1r3k2/p1rR1P1p/6p1/2b5/2q5/2B4P/PP3QP1/3R2K1 w KQkq - 0 1"); // a puzzle from chess.com
+//			"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // original configuration
 //			"2r2k2/8/8/8/8/8/K6r/8 w KQkq - 0 1"); //black wins in one move
 //			"5k2/8/8/8/8/8/K7/8 w KQkq - 0 1");
 
@@ -69,18 +69,30 @@ public class ChessGame {
 		// Create a starting position using "Forsyth–Edwards Notation". (See
 		// Wikipedia.)
 		Position position = new Position(
-				"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+//				"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+//				"rk6/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+				"rnbqkbnr/pppppppp/8/8/8/8/8/RK6 b KQkq - 0 1");
+		Position position1 = new Position(
+				"rnbqkbnr/pppppppp/8/8/8/8/8/RK6 w KQkq - 0 1");
 		System.out.println("initial --> " + position);
-		short move = position.getAllMoves()[1];
-		position.doMove(move);
-//		for (short move: moves) {
-//			System.out.println(move);
-//			int nextSqr = Move.getFromSqi(move);
-//			System.out.println(nextSqr);
-//		}
-
-		System.out.println("after --> " + position);
+		System.out.println("initial --> " + position1);
+//		short move = position.getAllMoves()[1];
+//		position.doMove(move);
+////		for (short move: moves) {
+////			System.out.println(move);
+////			int nextSqr = Move.getFromSqi(move);
+////			System.out.println(nextSqr);
+////		}
+//
+//		System.out.println("after --> " + position);
 //		System.out.println(position.getToPlay());
+//		System.out.println(position.getMaterial());
+//		System.out.println(position.getDomination());
+		System.out.println(position.getHashCode());
+		System.out.println(position1.getHashCode());
+		System.out.println((position.getHashCode() == position1.getHashCode()));
+
+
 
 	}
 	

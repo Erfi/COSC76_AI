@@ -15,7 +15,7 @@ public class AlphaAI implements ChessAI {
         return move;
     }
 
-    public boolean isCutOff(Position position, int currentDepth, int maxDepth){
+    private boolean isCutOff(Position position, int currentDepth, int maxDepth){
         if(position.isTerminal()){
             return true;
         }else if(currentDepth > maxDepth){
@@ -25,7 +25,7 @@ public class AlphaAI implements ChessAI {
         }
     }
 
-    public int utility(Position position){
+    private int utility(Position position){
 
         if(position.isStaleMate()){ // draw
             return 0;
@@ -41,22 +41,84 @@ public class AlphaAI implements ChessAI {
         }
     }
 
-    public int eval(Position position){ // I wrote this outside of utility() in case I wanted to have different eval() funcitions
+    private int eval(Position position){ // I wrote this outside of utility() in case I wanted to have different eval() funcitions
         int result;
-        if(position.getToPlay()==0){//AI (black)
+        if(position.getToPlay()==0){//white
             result = (int) (-position.getMaterial() + -(position.getDomination()+0.5));
             if(position.isCheck()){
                 result -= 50; // rewarding the check moves (50 is arbitrary!)
             }
         }else{
             result = (int) (position.getMaterial() + (position.getDomination()+0.5));
-            result += 50;
+            if(position.isCheck()) {
+                result += 50;
+            }
         }
-
+//        result = (int) (position.getMaterial() + (position.getDomination()+0.5));
+//        if(position.isCheck()) {
+//            result += (position.getToPlay() == 0) ? 50 : -50;
+//        }
         return result;//(position.getToPlay()==0) ? -position.getMaterial() : position.getMaterial();
     }
+    //===============================Alpha_Beta Methods===========================
+    public short AlphaBeta(Position position, int maxDepth) throws IllegalMoveException {
+        int maxValue = Integer.MIN_VALUE;
+        int currentDepth = 0;
+        short bestMove = Move.NO_MOVE;
+        for(short move : position.getAllMoves()){
+            position.doMove(move);
+            int newVal = alpha_beta_max_value(position, Integer.MIN_VALUE, Integer.MAX_VALUE, currentDepth, maxDepth);
+            if (newVal > maxValue ){
+                bestMove = move;
+                maxValue = newVal;
+            }
+            position.undoMove();
+        }
+        return bestMove;
+    }
+
+    private int alpha_beta_max_value(Position position, int alpha, int beta, int currentDepth, int maxDepth) throws IllegalMoveException {
+        if(isCutOff(position, currentDepth, maxDepth)){
+            return utility(position);
+        }
+        int value = Integer.MIN_VALUE/2;
+        int Alpha = alpha;
+        int Beta = beta;
+        for (short move : position.getAllMoves()){
+            position.doMove(move);
+            value = Math.max(value, alpha_beta_min_value(position, Alpha, Beta, currentDepth+1, maxDepth));
+            if(value >= Beta){
+                return value;
+            }
+            Alpha = Math.max(Alpha, value);
+            position.undoMove();
+        }
+        return value;
+    }
+
+    private int alpha_beta_min_value(Position position, int alpha, int beta, int currentDepth, int maxDepth) throws IllegalMoveException {
+        if(isCutOff(position, currentDepth, maxDepth)){
+            return utility(position);
+        }
+        int value = Integer.MAX_VALUE/2;
+        int Alpha = alpha;
+        int Beta = beta;
+        for (short move : position.getAllMoves()){
+            position.doMove(move);
+            value = Math.min(value, alpha_beta_max_value(position, Alpha, Beta, currentDepth+1, maxDepth));
+            if(value <= Alpha){
+                return value;
+            }
+            Beta = Math.min(Beta, value);
+            position.undoMove();
+        }
+        return value;
+    }
+
+    //============================================================================
 
 
+    //================================MINIMAX METHODS=============================
     public short ID_minimax(Position position, int maxDepth) {
         int currentDepth = 0;
         short bestMove = Move.NO_MOVE;
@@ -76,7 +138,8 @@ public class AlphaAI implements ChessAI {
                 }
                 position.undoMove();
             }catch (IllegalMoveException e){
-                // Don't do anything! This means that at this depth the terminal state has already happened!
+                // Don't do anything!
+                // This means that at this depth the terminal state has already happened!
             }
         }
         return bestMove;
@@ -128,4 +191,5 @@ public class AlphaAI implements ChessAI {
         }
         return value;
     }
+    //=========================================================================================
 }

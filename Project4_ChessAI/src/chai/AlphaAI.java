@@ -7,11 +7,13 @@ import chesspresso.move.Move;
 import chesspresso.position.Position;
 
 public class AlphaAI implements ChessAI {
-    private final static int MAXIMUMDEPTH = 3; //maximum depth for the search
+    private final static int MAXIMUMDEPTH = 6; //maximum depth for the search
 
     public short getMove(Position position) {
         short move = Move.NO_MOVE;
-        move = ID_minimax(position, MAXIMUMDEPTH);
+//        move = ID_minimax(position, MAXIMUMDEPTH);
+        move = ID_AlphaBeta(position, MAXIMUMDEPTH);
+//        move = AlphaBeta(position, MAXIMUMDEPTH);
         return move;
     }
 
@@ -61,56 +63,96 @@ public class AlphaAI implements ChessAI {
         return result;//(position.getToPlay()==0) ? -position.getMaterial() : position.getMaterial();
     }
     //===============================Alpha_Beta Methods===========================
-    public short AlphaBeta(Position position, int maxDepth) throws IllegalMoveException {
-        int maxValue = Integer.MIN_VALUE;
+    public short ID_AlphaBeta(Position position, int maxDepth){
         int currentDepth = 0;
         short bestMove = Move.NO_MOVE;
-        for(short move : position.getAllMoves()){
-            position.doMove(move);
-            int newVal = alpha_beta_max_value(position, Integer.MIN_VALUE, Integer.MAX_VALUE, currentDepth, maxDepth);
-            if (newVal > maxValue ){
-                bestMove = move;
-                maxValue = newVal;
+        int bestMoveUtility = Integer.MIN_VALUE/2;
+        short tempMove;
+        int tempUtility;
+
+        for (int i=0; i<maxDepth; i++){
+            try {
+                tempMove = AlphaBeta(position, currentDepth+i);
+                position.doMove(tempMove);
+                tempUtility = utility(position);
+                System.out.println("bestmove at depth " + i + " is: " + tempMove + " with utility value of: " + tempUtility);
+                if(tempUtility > bestMoveUtility){
+                    bestMove = tempMove;
+                    bestMoveUtility = tempUtility;
+                }
+                position.undoMove();
+            }catch (IllegalMoveException e){
+                // Don't do anything!
+                // This means that at this depth the terminal state has already happened!
             }
-            position.undoMove();
         }
         return bestMove;
     }
 
-    private int alpha_beta_max_value(Position position, int alpha, int beta, int currentDepth, int maxDepth) throws IllegalMoveException {
+    public short AlphaBeta(Position position, int maxDepth) {
+        int maxValue = Integer.MIN_VALUE;
+        int currentDepth = 0;
+        short bestMove = Move.NO_MOVE;
+        for(short move : position.getAllMoves()){
+            try {
+                position.doMove(move);
+                int newVal = alpha_beta_max_value(position, Integer.MIN_VALUE / 2, Integer.MAX_VALUE / 2, currentDepth, maxDepth);
+                if (newVal > maxValue) {
+                    bestMove = move;
+                    maxValue = newVal;
+                }
+                position.undoMove();
+            }catch(IllegalMoveException e){
+                System.out.println("IllegalMoveException in AlphaBeta");
+            }
+        }
+        return bestMove;
+    }
+
+    private int alpha_beta_max_value(Position position, int alpha, int beta, int currentDepth, int maxDepth) {
         if(isCutOff(position, currentDepth, maxDepth)){
             return utility(position);
         }
         int value = Integer.MIN_VALUE/2;
-        int Alpha = alpha;
-        int Beta = beta;
+//        int Alpha = alpha;
+//        int Beta = beta;
         for (short move : position.getAllMoves()){
-            position.doMove(move);
-            value = Math.max(value, alpha_beta_min_value(position, Alpha, Beta, currentDepth+1, maxDepth));
-            if(value >= Beta){
-                return value;
+            try{
+                position.doMove(move);
+                value = Math.max(value, alpha_beta_min_value(position, alpha, beta, currentDepth+1, maxDepth));
+                position.undoMove();
+//                System.out.println("max_value: " + value);
+                if(value >= beta){
+                    return value;
+                }
+                alpha = Math.max(alpha, value);
+            }catch(IllegalMoveException e){
+                System.out.println("IllegalMoveException in alpha_beta_max_value");
             }
-            Alpha = Math.max(Alpha, value);
-            position.undoMove();
         }
         return value;
     }
 
-    private int alpha_beta_min_value(Position position, int alpha, int beta, int currentDepth, int maxDepth) throws IllegalMoveException {
+    private int alpha_beta_min_value(Position position, int alpha, int beta, int currentDepth, int maxDepth) {
         if(isCutOff(position, currentDepth, maxDepth)){
             return utility(position);
         }
         int value = Integer.MAX_VALUE/2;
-        int Alpha = alpha;
-        int Beta = beta;
+//        int Alpha = alpha;
+//        int Beta = beta;
         for (short move : position.getAllMoves()){
-            position.doMove(move);
-            value = Math.min(value, alpha_beta_max_value(position, Alpha, Beta, currentDepth+1, maxDepth));
-            if(value <= Alpha){
-                return value;
+            try{
+                position.doMove(move);
+                value = Math.min(value, alpha_beta_max_value(position, alpha, beta, currentDepth+1, maxDepth));
+                position.undoMove();
+//                System.out.println("min_value: " + value);
+                if(value <= alpha){
+                    return value;
+                }
+                beta = Math.min(beta, value);
+            }catch (IllegalMoveException e){
+                System.out.println("IllegalMoveException in alpha_beta_min_value");
             }
-            Beta = Math.min(Beta, value);
-            position.undoMove();
         }
         return value;
     }

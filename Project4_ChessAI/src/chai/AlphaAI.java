@@ -21,20 +21,16 @@ public class AlphaAI implements ChessAI {
         }
     }
     //=====================================
-    private final static int MAXIMUMDEPTH = 6; //maximum depth for the search
+    private final static int MAXIMUMDEPTH = 5; //maximum depth for the search
     private int numNodes = 0;
-    private final static int INITIALHASHSIZE = 100; //10^2
-    private final static int MAXHASHSIZE = 10000;//10^4
+    private final static int INITIALHASHSIZE = 100; //10^3
+    private final static int MAXHASHSIZE = 10000;//10^6
     private LinkedHashMap<Integer, TTEntry> TT = new LinkedHashMap<Integer, TTEntry>(INITIALHASHSIZE, 0.75f, true){
         protected boolean removeEldestEntry(Map.Entry eldest){
             return size() > MAXHASHSIZE;
         }
     };//Transposition Table
-//    private LinkedHashMap<Integer, double[]> TT = new LinkedHashMap<Integer, double[]>(INITIALHASHSIZE, 0.75f, true){
-//    protected boolean removeEldestEntry(Map.Entry eldest){
-//        return size() > MAXHASHSIZE;
-//        }
-//    };//Transposition Table
+
 
     public short getMove(Position position) {
         short move = Move.NO_MOVE;
@@ -89,35 +85,29 @@ public class AlphaAI implements ChessAI {
     //===============================Alpha_Beta Methods===========================
     public short ID_AlphaBeta(Position position, int maxDepth){
         int currentDepth = 0;
-        short bestMove = Move.NO_MOVE;
-        int bestMoveUtility = Integer.MIN_VALUE/2;
-        short tempMove;
-        int tempUtility;
+        short[] bestMoves = new short[maxDepth];
+        int bestMoveIndex = 0;
 
         for (int i=0; i<maxDepth; i++){
+            numNodes=0;//reset
+            bestMoves[i] = AlphaBeta(position, currentDepth+i);
+            bestMoveIndex = i;
             try {
-                tempMove = AlphaBeta(position, currentDepth+i);
-                position.doMove(tempMove);
-                numNodes++; //for stats
-                tempUtility = utility(position);
-                System.out.println("bestmove at depth " + i + " is: " + tempMove + " with utility value of: " + tempUtility + " nodes explored: " + numNodes);
-                if(tempUtility > bestMoveUtility){
-                    bestMove = tempMove;
-                    bestMoveUtility = tempUtility;
-                }
+                position.doMove(bestMoves[i]);
+                System.out.println("best move at depth " + i + " is: " + bestMoves[i] + " with utility: " + utility(position) + " after exploring " + numNodes + " nodes.");
                 position.undoMove();
-            }catch (IllegalMoveException e){
-                // Don't do anything!
-                // This means that at this depth the terminal state has already happened!
+            }catch(IllegalMoveException e){
+
             }
         }
-        return bestMove;
+        return bestMoves[bestMoveIndex];
     }
 
     public short AlphaBeta(Position position, int maxDepth) {
         int maxValue = Integer.MIN_VALUE;
-        int currentDepth = 0;
         short bestMove = Move.NO_MOVE;
+        int currentDepth = 0;
+
         for(short move : position.getAllMoves()){
             try {
                 position.doMove(move);
@@ -139,12 +129,10 @@ public class AlphaAI implements ChessAI {
             return utility(position);
         }
         int value = Integer.MIN_VALUE/2;
-//        int Alpha = alpha;
-//        int Beta = beta;
         for (short move : position.getAllMoves()){
             try{
                 position.doMove(move);
-
+                numNodes++;
                 //Check with the Transposition Table
                 Integer tempVal = getUtilityFromTT(position, currentDepth);
                 if(tempVal != null){
@@ -173,11 +161,10 @@ public class AlphaAI implements ChessAI {
             return utility(position);
         }
         int value = Integer.MAX_VALUE/2;
-//        int Alpha = alpha;
-//        int Beta = beta;
         for (short move : position.getAllMoves()){
             try{
                 position.doMove(move);
+                numNodes++;
 
                 //Check with the Transposition Table
                 Integer tempVal = getUtilityFromTT(position, currentDepth);
@@ -202,32 +189,6 @@ public class AlphaAI implements ChessAI {
         return value;
     }
 
-//    private Integer getUtilityFromTT(Position position, int currentDepth){
-//        int hashIndex = (int)(position.getHashCode()%MAXHASHSIZE);
-//        if(TT.containsKey(hashIndex)){// check if the position is in the TT
-//            if((long)(TT.get(hashIndex)[0]) == position.getHashCode()){//check if the right position is stored in that index (ignoring the zobrist hash collisions!)
-//                if((int)(TT.get(hashIndex)[1]) >= currentDepth){// if the position in the table is of higher quality (obtained from deeper plys))
-//                    return (int)(TT.get(hashIndex)[2]);
-//                }
-//            }
-//        }
-//        return null;
-//    }
-//
-//    private void putUtilityinTT(Position position, int currentDepth, int utilVal){
-//        int hashIndex = (int)(position.getHashCode()%MAXHASHSIZE);
-//        if(!TT.containsKey(hashIndex)){ //if the position is not in the table, add it
-//            double[] e = new double[]{position.getHashCode(), currentDepth, utilVal};
-////            TTEntry e = new TTEntry(position.getHashCode(), currentDepth, utilVal);
-//            TT.put(hashIndex, e);
-//        }else{ //if the position is in the table and is of less quality (lower depth), replace it
-//            if ((int)(TT.get(hashIndex)[1]) < currentDepth) {//Not checking the zobrist hash (not checking if the position is the same)
-////                TTEntry e = new TTEntry(position.getHashCode(), currentDepth, utilVal);
-//                double[] e = new double[]{position.getHashCode(), currentDepth, utilVal};
-//                TT.put(hashIndex, e);
-//            }
-//        }
-//    }
 
     private Integer getUtilityFromTT(Position position, int currentDepth){
         int hashIndex = (int)(position.getHashCode()%MAXHASHSIZE);
@@ -270,7 +231,7 @@ public class AlphaAI implements ChessAI {
                 tempMove = minimax(position, currentDepth+i);
                 position.doMove(tempMove);
                 tempUtility = utility(position);
-                System.out.println("bestmove at depth " + i + " is: " + tempMove + " with utility value of: " + tempUtility);
+                System.out.println("bestmove at depth " + i + " is: " + tempMove + " with utility value of: " + tempUtility + " nodes explored: " + numNodes);
                 if(tempUtility > bestMoveUtility){
                     bestMove = tempMove;
                     bestMoveUtility = tempUtility;
@@ -290,6 +251,7 @@ public class AlphaAI implements ChessAI {
         short bestMove = Move.NO_MOVE;
         for(short possibleMove : position.getAllMoves()){
             position.doMove(possibleMove);
+            numNodes++;
             int newVal = min_value(position, currentDepth, maxDepth);
             if (newVal > maxValue ){
                 bestMove = possibleMove;
@@ -310,6 +272,7 @@ public class AlphaAI implements ChessAI {
         int value = Integer.MIN_VALUE/2;
         for(short move : position.getAllMoves()){
             position.doMove(move);
+            numNodes++;
             value = Math.max(value,min_value(position, currentDepth+1, maxDepth));
             position.undoMove();
         }
@@ -325,6 +288,7 @@ public class AlphaAI implements ChessAI {
         int value = Integer.MAX_VALUE/2;
         for(short move : position.getAllMoves()){
             position.doMove(move);
+            numNodes++;
             value = Math.min(value, max_value(position, currentDepth+1, maxDepth));
             position.undoMove();
         }

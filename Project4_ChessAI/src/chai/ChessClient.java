@@ -258,9 +258,5 @@ public class ChessClient extends Application {
 		public void reset() {
 			this.moveTask = null;
 		}
-
-	
 	}
-
-	
 }

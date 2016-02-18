@@ -1,11 +1,7 @@
 package csp_solver;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
+
 import javafx.util.Pair;
 
 /**
@@ -15,19 +11,10 @@ import javafx.util.Pair;
 public class ConstraintSatisfactionProblem {
     private int nodesExplored;
     private int constraintsChecked;
-    private Map<Integer, Set<Integer>> variablesMap;
-    private Map<Integer, Constraint> constraintMap;
-    private class Constraint{
-        public Integer var1;
-        public Integer var2;
-        Set<Pair<Integer, Integer>> constraints;
+    private Map<Integer, Set<Integer>> variablesMap = new HashMap<>();//map<ID, Set<values>>
+    private Map<Pair<Integer, Integer>, Set<Pair<Integer, Integer>>> constraintMap = new HashMap<>();//map<Pair<ID1,ID2> , set<Pair<ID1val, ID2val>>>
+    private Map<Integer, Set<Integer>> neighborMap = new HashMap<>();//map<ID, set<ID>>
 
-        public Constraint(Integer v1, Integer v2, Set<Pair<Integer, Integer>> c){
-            var1 = v1;
-            var2 = v2;
-            constraints = c;
-        }
-    }
 
 
     /**
@@ -51,10 +38,6 @@ public class ConstraintSatisfactionProblem {
         constraintsChecked = 0;
     }
 
-    private void initMaps(){
-        variablesMap = new HashMap<Integer, Set<Integer>>();
-        constraintMap = new HashMap<Integer, Constraint>();
-    }
     
     private void incrementNodeCount() {
         ++nodesExplored;
@@ -83,7 +66,8 @@ public class ConstraintSatisfactionProblem {
      * @param domain  the domain of the variable
      */
     public void addVariable(Integer id, Set<Integer> domain) {
-        variablesMap.put(id, domain);
+        Set<Integer> clonedDomain = new HashSet<>(domain);
+        variablesMap.put(id, clonedDomain);
     }
     
     /**
@@ -93,18 +77,84 @@ public class ConstraintSatisfactionProblem {
      * @param constraint  the constraint
      */
     public void addConstraint(Integer id1, Integer id2, Set<Pair<Integer, Integer>> constraint) {
+        Pair<Integer, Integer> newPair = new Pair<>(id1, id2);
+        constraintMap.put(newPair, constraint);
+        addNeighbors(id1, id2);// add them as each others neighbors
+    }
 
+    private void addNeighbors(Integer id1, Integer id2){
+        //for id1
+        if(!neighborMap.containsKey(id1)){//no id1 in the map
+            Set<Integer> newSet = new HashSet<>();//make a new set
+            newSet.add(id2);//add id2 as a neighbor
+            neighborMap.put(id1, newSet);
+        }else{//id1 in the map
+            neighborMap.get(id1).add(id2);//add id2 as id1's neighbor
+        }
+
+        //for id2
+        if(!neighborMap.containsKey(id2)){//no id2 in the map
+            Set<Integer> newSet = new HashSet<>();//make a new set
+            newSet.add(id1);//add id1 as a neighbor
+            neighborMap.put(id2, newSet);
+        }else{//id2 in the map
+            neighborMap.get(id2).add(id1);//add id1 as id2's neighbor
+        }
     }
     
     /**
      * Enforce consistency by AC-3, PC-3.
      */
     private boolean enforceConsistency() {
-        return false;
+        boolean b = AC_3();
+        System.out.println(b);
+        return b;
+    }
+
+    /**
+     *AC-3 for arc consistancy
+     * @return a boolean for if the arc consistancy has been achieved or not
+     */
+    private boolean AC_3(){
+        Queue queue = new LinkedList<Pair<Integer, Integer>>();//queue of arcs
+        queue.addAll(constraintMap.keySet());
+
+        while(!queue.isEmpty()){
+            Pair tempPair = (Pair)queue.poll();
+            if(revise((Integer)tempPair.getKey(), (Integer)tempPair.getValue())){
+                if(variablesMap.get(tempPair.getKey()).size() == 0){ //if domain of idi is empty
+                    return false;
+                }
+                for(Integer neighbourID : neighborMap.get(tempPair.getKey())){
+                    if(neighbourID != tempPair.getValue()){
+                        Pair<Integer, Integer> newPair = new Pair<>(neighbourID, (Integer) tempPair.getKey());
+                        queue.add(newPair);
+                    }
+                }
+            }
+        }
+        return true;
     }
     
     private boolean revise(Integer id1, Integer id2) {
-        return false;
+        boolean revised = false;
+        for(Iterator<Integer> iterator = variablesMap.get(id1).iterator();  iterator.hasNext();) {
+            Integer x = iterator.next();
+            boolean satisfied = false;
+            for (Integer y : variablesMap.get(id2)) {
+                Pair<Integer, Integer> p = new Pair<>(x, y);//constraint
+                if (constraintMap.get(new Pair(id1, id2)).contains(p)) {
+                    satisfied = true;
+                    break;
+                }
+            }
+            if (!satisfied) {//if there is no y in id2 such that (x,y) satisfies their constraint
+//                variablesMap.get(id1).remove(x); //remove x from id1's domain
+                iterator.remove();//remove x from id1's domain
+                revised = true;
+            }
+        }
+        return revised;
     }
 
     /**

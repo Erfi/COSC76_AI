@@ -30,7 +30,7 @@ public class ConstraintSatisfactionProblem {
             return null;
 //        System.out.println("enforce consistency is good!");
         Map<Integer, Integer> solution = backtracking(new HashMap<>());
-        System.out.println(solution);
+//        System.out.println(solution);
         double duration = (System.currentTimeMillis() - before) / 1000.0;
         printStats();
         System.out.println(String.format("Search time is %.2f second", duration));
@@ -84,6 +84,16 @@ public class ConstraintSatisfactionProblem {
         Pair<Integer, Integer> newPair = new Pair<>(id1, id2);
         constraintMap.put(newPair, constraint);
         addNeighbors(id1, id2);// add them as each others neighbors
+
+        //add the reverse of the constraints as well
+        Pair<Integer, Integer> newReversePair = new Pair<>(id2, id1);
+        Set<Pair<Integer, Integer>> reverseConstraint = new HashSet<>();
+        if(!constraintMap.containsKey(newReversePair)){//if already not added (just an extra check!)
+            for(Pair<Integer, Integer>  c : constraint){
+                reverseConstraint.add(new Pair<>(c.getValue(), c.getKey()));
+            }
+            constraintMap.put(newReversePair, reverseConstraint);
+        }
     }
 
     private void addNeighbors(Integer id1, Integer id2){
@@ -147,7 +157,8 @@ public class ConstraintSatisfactionProblem {
             boolean satisfied = false;
             for (Integer y : variablesMap.get(id2)) { //for each value on the domain of id2
                 Pair<Integer, Integer> p = new Pair<>(x, y);//constraint
-                if (constraintMap.get(new Pair(id1, id2)).contains(p)) { // is there is a legal relation between them
+                Pair<Integer, Integer> tempPair = new Pair<>(id1, id2);
+                if (constraintMap.get(tempPair).contains(p)) { // is there is a legal relation between them
                     satisfied = true; //we are satisfied to find one
                     break;
                 }
@@ -269,7 +280,7 @@ public class ConstraintSatisfactionProblem {
         Queue queue = new LinkedList<Pair<Integer, Integer>>(); //queue of arcs
         //fill the queue withe unassigned neighbors of varID
         for (Integer neighborId : unassigned){
-            Pair<Integer, Integer> newPair = new Pair<>(varID, neighborId); //or (neighborId, varID)?
+            Pair<Integer, Integer> newPair = new Pair<>(varID, neighborId ); //or (neighborId, varID)?
             queue.add(newPair);
         }
 
@@ -298,7 +309,8 @@ public class ConstraintSatisfactionProblem {
             boolean satisfied = false;
             for (Integer y : variablesMap.get(id2)) { //for each value on the domain of id2
                 Pair<Integer, Integer> p = new Pair<>(x, y);//constraint
-                if (constraintMap.get(new Pair(id1, id2)).contains(p)) { // is there is a legal relation between them
+                Pair<Integer, Integer> tempPair = new Pair<>(id1, id2);
+                if (constraintMap.get(tempPair).contains(p)) { // is there is a legal relation between them
                     satisfied = true; //we are satisfied to find one
                     break;
                 }

@@ -12,8 +12,10 @@ public class ConstraintSatisfactionProblem {
     private int nodesExplored;
     private int constraintsChecked;
     private Map<Integer, Set<Integer>> variablesMap = new HashMap<>();//map<ID, Set<values>>
+    private Map<Integer, Set<Integer>> removedVariablesMap = new HashMap<>();//contains the removed IDs and their removed values in MAC-3 algorithm
     private Map<Pair<Integer, Integer>, Set<Pair<Integer, Integer>>> constraintMap = new HashMap<>();//map<Pair<ID1,ID2> , set<Pair<ID1val, ID2val>>>
     private Map<Integer, Set<Integer>> neighborMap = new HashMap<>();//map<ID, set<ID>>
+
 
 
 
@@ -26,7 +28,9 @@ public class ConstraintSatisfactionProblem {
         long before = System.currentTimeMillis();
         if (!enforceConsistency())
             return null;
+//        System.out.println("enforce consistency is good!");
         Map<Integer, Integer> solution = backtracking(new HashMap<>());
+        System.out.println(solution);
         double duration = (System.currentTimeMillis() - before) / 1000.0;
         printStats();
         System.out.println(String.format("Search time is %.2f second", duration));
@@ -107,7 +111,7 @@ public class ConstraintSatisfactionProblem {
      */
     private boolean enforceConsistency() {
         boolean b = AC_3();
-        System.out.println(b);
+//        System.out.println(b);
         return b;
     }
 
@@ -117,18 +121,18 @@ public class ConstraintSatisfactionProblem {
      */
     private boolean AC_3(){
         Queue queue = new LinkedList<Pair<Integer, Integer>>();//queue of arcs
-        queue.addAll(constraintMap.keySet());
+        queue.addAll(constraintMap.keySet());// fill the queue with all the arcs
 
         while(!queue.isEmpty()){
             Pair tempPair = (Pair)queue.poll();
-            if(revise((Integer)tempPair.getKey(), (Integer)tempPair.getValue())){
+            if(revise((Integer)tempPair.getKey(), (Integer)tempPair.getValue())){ //if the arc domain is revised (changed)
                 if(variablesMap.get(tempPair.getKey()).size() == 0){ //if domain of idi is empty
                     return false;
                 }
-                for(Integer neighbourID : neighborMap.get(tempPair.getKey())){
-                    if(neighbourID != tempPair.getValue()){
+                for(Integer neighbourID : neighborMap.get(tempPair.getKey())){ //for all the neighbors
+                    if(neighbourID != tempPair.getValue()){ //except the neighbor that we just met (revised)
                         Pair<Integer, Integer> newPair = new Pair<>(neighbourID, (Integer) tempPair.getKey());
-                        queue.add(newPair);
+                        queue.add(newPair); // add them in the queue for future revision
                     }
                 }
             }
@@ -138,13 +142,13 @@ public class ConstraintSatisfactionProblem {
     
     private boolean revise(Integer id1, Integer id2) {
         boolean revised = false;
-        for(Iterator<Integer> iterator = variablesMap.get(id1).iterator();  iterator.hasNext();) {
+        for(Iterator<Integer> iterator = variablesMap.get(id1).iterator();  iterator.hasNext();) { // for  each value in the domain of id1
             Integer x = iterator.next();
             boolean satisfied = false;
-            for (Integer y : variablesMap.get(id2)) {
+            for (Integer y : variablesMap.get(id2)) { //for each value on the domain of id2
                 Pair<Integer, Integer> p = new Pair<>(x, y);//constraint
-                if (constraintMap.get(new Pair(id1, id2)).contains(p)) {
-                    satisfied = true;
+                if (constraintMap.get(new Pair(id1, id2)).contains(p)) { // is there is a legal relation between them
+                    satisfied = true; //we are satisfied to find one
                     break;
                 }
             }
@@ -163,22 +167,163 @@ public class ConstraintSatisfactionProblem {
      * @return a solution if found, null otherwise.
      */
     private Map<Integer, Integer> backtracking(Map<Integer, Integer> partialSolution) {
+        if(isComplete(partialSolution)){
+            return partialSolution;
+        }
+        Integer varID = FakeSelectUnasignedVariable(partialSolution);
+        for(Integer value : FakeOrderDomainValues(varID, partialSolution)){
+            HashMap<Integer, Set<Integer>> removed = new HashMap<>();//as backup
+            if(isConsistent(varID, value, partialSolution)){
+                partialSolution.put(varID, value);
+                boolean inferences = inference(varID, partialSolution, removed);
+                if(inferences) { //if MAC-3 worked
+                    //add inferences to the assignment
+                    Map<Integer,Integer> result = backtracking(partialSolution);
+                    if(result != null){
+                        return result;
+                    }
+                }
+            }
+            //not consistent remove {var, value} and inferences from partialSolution
+            revertChanges(varID, value, partialSolution, removed);
+        }
         return null;
     }
-    
+
+    private void revertChanges(Integer varID, Integer value, Map<Integer, Integer> partialSolution, HashMap<Integer, Set<Integer>> removed){
+        //remove the {var, value} from partialSolutions
+        if(partialSolution.containsKey(varID)) {
+            partialSolution.remove(varID);
+        }
+        //remove the changes from the inference
+        for(Integer id : removed.keySet()){
+            variablesMap.get(id).addAll(removed.get(id));
+        }
+    }
+
+
+    /**
+     * Checks to see if the var-value pair is consistent with the given assignments map
+     * @param varID1 variable in question
+     * @param value1 value of the variable in quesiton
+     * @param assignment the partial assignment so far
+     * @return true if consistent and false otherwise
+     */
+    private boolean isConsistent(Integer varID1, Integer value1, Map<Integer, Integer> assignment){
+        boolean result = true;
+        for(Integer varID2 : assignment.keySet()){
+            Pair<Integer, Integer> IDpair = new Pair<>(varID1, varID2);
+            Pair<Integer, Integer> valuePair = new Pair<>(value1, assignment.get(varID2));
+            if(constraintMap.containsKey(IDpair)){ //if there exist an arc between IDpair
+                if(!constraintMap.get(IDpair).contains(valuePair)){ //if there is no relation such as valuePair as their constraint
+                    result = false;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Checks to see if the given assignment is complete (to be used in the backtracking())
+     * @param assignment
+     * @return a boolean, true if complete, false otherwise
+     */
+    private boolean isComplete(Map<Integer, Integer> assignment){
+        if(variablesMap.size() == assignment.size()){
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Inference for backtracking
      * Implement FC and MAC3
-     * @param var              the new assigned variable
-     * @param value            the new assigned value
+     * @param varID              the new assigned variable
      * @param partialSolution  the partialSolution
      * @param removed          the values removed from other variables' domains
      * @return true if the partial solution may lead to a solution, false otherwise.
      */
-    private boolean inference(Integer var, Integer value, Map<Integer, Integer> partialSolution, Map<Integer, Set<Integer>> removed) {
+    private boolean inference(Integer varID, Map<Integer, Integer> partialSolution, Map<Integer, Set<Integer>> removed) {
+        //find the neighbors of varID that are still unassigned
+        ArrayList<Integer> unassignedNeighbors = new ArrayList<Integer>();
+        for(Integer neighbor : neighborMap.get(varID)){
+//            System.out.println("Hi");
+            if(!partialSolution.containsKey(neighbor)){ // if not part of the partial solution (means unassigned)
+                unassignedNeighbors.add(neighbor);
+            }
+        }
+
+        //pass unassigned neighbors list to the MAC-3 algorithm
+        return MAC_3(varID, unassignedNeighbors, removed);
+    }
+
+    /**
+     *
+     * @param varID variable to do the MAC-3 algorithm for
+     * @param unassigned list of unassigned neighbor IDs
+     * @param removed map of removed cariables with their removed domein
+     * @return true if arc consistency can complete and false otherwise
+     */
+    private boolean MAC_3(Integer varID, List<Integer> unassigned, Map<Integer,Set<Integer>> removed){
+        Queue queue = new LinkedList<Pair<Integer, Integer>>(); //queue of arcs
+        //fill the queue withe unassigned neighbors of varID
+        for (Integer neighborId : unassigned){
+            Pair<Integer, Integer> newPair = new Pair<>(varID, neighborId); //or (neighborId, varID)?
+            queue.add(newPair);
+        }
+
+        //do AC-3
+        while(!queue.isEmpty()){
+            Pair tempPair = (Pair)queue.poll();
+            if(revise_MAC_3((Integer)tempPair.getKey(), (Integer)tempPair.getValue(), removed)){ //if the arc domain is revised (changed)
+                if(variablesMap.get(tempPair.getKey()).size() == 0){ //if domain of idi is empty
+                    return false;
+                }
+                for(Integer neighbourID : neighborMap.get(tempPair.getKey())){ //for all the neighbors
+                    if(neighbourID != tempPair.getValue()){ //except the neighbor that we just met (revised)
+                        Pair<Integer, Integer> newPair = new Pair<>(neighbourID, (Integer) tempPair.getKey());
+                        queue.add(newPair); // add them in the queue for future revision
+                    }
+                }
+            }
+        }
         return true;
     }
- 
+
+    private boolean revise_MAC_3(Integer id1, Integer id2, Map<Integer,Set<Integer>> removed){
+        boolean revised = false;
+        for(Iterator<Integer> iterator = variablesMap.get(id1).iterator();  iterator.hasNext();) { // for  each value in the domain of id1
+            Integer x = iterator.next();
+            boolean satisfied = false;
+            for (Integer y : variablesMap.get(id2)) { //for each value on the domain of id2
+                Pair<Integer, Integer> p = new Pair<>(x, y);//constraint
+                if (constraintMap.get(new Pair(id1, id2)).contains(p)) { // is there is a legal relation between them
+                    satisfied = true; //we are satisfied to find one
+                    break;
+                }
+            }
+            if (!satisfied) {//if there is no y in id2 such that (x,y) satisfies their constraint
+//                variablesMap.get(id1).remove(x); //remove x from id1's domain
+                iterator.remove();//remove x from id1's domain
+                //add id1 to the removed map along withs removed value
+                addToRemovedMap(id1, x, removed);
+                revised = true;
+            }
+        }
+        return revised;
+    }
+
+    private void addToRemovedMap(Integer id, Integer value, Map<Integer,Set<Integer>> removed){
+        if(removed.containsKey(id)){
+            removed.get(id).add(value);
+        }else{
+            HashSet<Integer>  valueSet = new HashSet<>();
+            valueSet.add(value);
+            removed.put(id, valueSet);
+        }
+    }
+
     /**
      * Look-ahead value ordering
      * Pick the least constraining value (min-conflicts)
@@ -191,6 +336,17 @@ public class ConstraintSatisfactionProblem {
     }
 
     /**
+     * Dumb version of orderDomainValues()
+     * @param var
+     * @param partialSolution
+     * @return a shuffeled list of values for the given var
+     */
+    private Iterable<Integer> FakeOrderDomainValues(Integer var, Map<Integer, Integer> partialSolution){
+        ArrayList<Integer> values = new ArrayList<>(variablesMap.get(var));
+        Collections.shuffle(values);
+        return values;
+    }
+    /**
      * Dynamic variable ordering
      * Pick the variable with the minimum remaining values or the variable with the max degree.
      * Or pick the variable with the minimum ratio of remaining values to degree.
@@ -200,6 +356,22 @@ public class ConstraintSatisfactionProblem {
     private Integer selectUnassignedVariable(Map<Integer, Integer> partialSolution) {
         return -1;
     }
+
+    /**
+     * Dumb version of selectUnassignedVariable
+     * @param partialSolution tge partial solution
+     * @return one unassigned variable
+     */
+    private Integer FakeSelectUnasignedVariable(Map<Integer, Integer> partialSolution){
+        Integer var = -1;
+        for(Integer ID : variablesMap.keySet()){ // go through the variablesMap
+            if(!partialSolution.containsKey(ID)){ //choose the first ID that does not yet exist in the partial solutions
+                var = ID;
+                break;
+            }
+        }
+        return var;
+    }
     
     /**
      * Backjumping
@@ -207,5 +379,66 @@ public class ConstraintSatisfactionProblem {
      * @param partialSolution
      */
     private void jumpBack(Map<Integer, Integer> partialSolution) {
+    }
+
+    public static void main(String[] args){
+        //==============================
+        //Australia map coloring problem (Used for debugging)
+        //==============================
+        ConstraintSatisfactionProblem csp = new ConstraintSatisfactionProblem();
+        Set<Integer> domain = new HashSet<>();
+        domain.add(1); //red
+        domain.add(2); //green
+        domain.add(3); //blue
+
+
+        csp.addVariable(11, domain); //WA
+        csp.addVariable(12, domain); //NT
+        csp.addVariable(13, domain); //Q
+        csp.addVariable(14, domain); //NSW
+        csp.addVariable(15, domain); //V
+        csp.addVariable(16, domain); //SA
+
+
+        Set<Pair<Integer,Integer>> constraints = new HashSet<>();
+        constraints.add(new Pair<Integer, Integer>(1,2)); //red-green
+        constraints.add(new Pair<Integer, Integer>(1,3)); //red-blue
+        constraints.add(new Pair<Integer, Integer>(2,1)); //green-red
+        constraints.add(new Pair<Integer, Integer>(2,3)); //green-blue
+        constraints.add(new Pair<Integer, Integer>(3,1)); //blue-red
+        constraints.add(new Pair<Integer, Integer>(3,2)); //blue-green
+
+        csp.addConstraint(11,12,constraints);
+        csp.addConstraint(12,11, constraints);
+
+        csp.addConstraint(12,13,constraints);
+        csp.addConstraint(13,12, constraints);
+
+        csp.addConstraint(13,14,constraints);
+        csp.addConstraint(14,13, constraints);
+
+        csp.addConstraint(14,15,constraints);
+        csp.addConstraint(15,14, constraints);
+
+        csp.addConstraint(11,12,constraints);
+        csp.addConstraint(12,11, constraints);
+
+        csp.addConstraint(15,16,constraints);
+        csp.addConstraint(16,15, constraints);
+
+        csp.addConstraint(11,16,constraints);
+        csp.addConstraint(16,11, constraints);
+
+        csp.addConstraint(12,16,constraints);
+        csp.addConstraint(16,12, constraints);
+
+        csp.addConstraint(13,16,constraints);
+        csp.addConstraint(16,13, constraints);
+
+        csp.addConstraint(14,16,constraints);
+        csp.addConstraint(16,14, constraints);
+
+
+        csp.solve();
     }
 }

@@ -25,9 +25,9 @@ public class Queens {
                 Set<Pair<Integer, Integer>> constraint = new HashSet<>();
                 for (int a = 1; a <= numberOfQueens; ++a) {
                     for (int b = 1; b <= numberOfQueens; ++b) {
-                        if (a == b || Math.abs(a - b) == Math.abs(i - j))
+                        if (a == b || Math.abs(a - b) == Math.abs(i - j)) //no same row || diagonal in the white list
                             continue;
-                        constraint.add(new Pair<>(a, b));
+                        constraint.add(new Pair<>(a, b)); //both (1,2) and (2,1) are added as constraints
                     }
                 }
                 solver.addConstraint(i, j, constraint);
@@ -61,7 +61,7 @@ public class Queens {
     }
     
     public static final void main(String[] args) {
-        int[] solution = new Queens(20).solve();
+        int[] solution = new Queens(8).solve();
         if (!Queens.verify(solution))
             System.out.println("Solution not found");
         else

@@ -12,9 +12,11 @@ public class ConstraintSatisfactionProblem {
     private int nodesExplored;
     private int constraintsChecked;
     private Map<Integer, Set<Integer>> variablesMap = new HashMap<>();//map<ID, Set<values>>
-    private Map<Integer, Set<Integer>> removedVariablesMap = new HashMap<>();//contains the removed IDs and their removed values in MAC-3 algorithm
     private Map<Pair<Integer, Integer>, Set<Pair<Integer, Integer>>> constraintMap = new HashMap<>();//map<Pair<ID1,ID2> , set<Pair<ID1val, ID2val>>>
     private Map<Integer, Set<Integer>> neighborMap = new HashMap<>();//map<ID, set<ID>>
+    private boolean useLCV = true;
+    private boolean useMRV = true;
+    private boolean useInference = true;
 
 
 
@@ -120,6 +122,8 @@ public class ConstraintSatisfactionProblem {
      * Enforce consistency by AC-3, PC-3.
      */
     private boolean enforceConsistency() {
+        System.out.println(variablesMap);
+        System.out.println(constraintMap);
         boolean b = AC_3();
 //        System.out.println(b);
         return b;
@@ -178,15 +182,33 @@ public class ConstraintSatisfactionProblem {
      * @return a solution if found, null otherwise.
      */
     private Map<Integer, Integer> backtracking(Map<Integer, Integer> partialSolution) {
+        incrementNodeCount();
         if(isComplete(partialSolution)){
             return partialSolution;
         }
-        Integer varID = selectUnassignedVariable(partialSolution);
-        for(Integer value : orderDomainValues(varID, partialSolution)){
+        Integer varID;
+        if(useMRV) {
+            varID = selectUnassignedVariable(partialSolution);
+        }else{
+            varID = FakeSelectUnasignedVariable(partialSolution);
+        }
+        Iterable<Integer> domainVals;
+        if(useLCV){
+            domainVals = orderDomainValues(varID, partialSolution);
+        }else{
+            domainVals = FakeOrderDomainValues(varID, partialSolution);
+        }
+        for(Integer value : domainVals){
             HashMap<Integer, Set<Integer>> removed = new HashMap<>();//as backup
             if(isConsistent(varID, value, partialSolution)){
                 partialSolution.put(varID, value);
-                boolean inferences = inference(varID, partialSolution, removed);
+
+                boolean inferences;
+                if(useInference) {
+                    inferences = inference(varID, partialSolution, removed);
+                }else{
+                    inferences = true;
+                }
                 if(inferences) { //if MAC-3 worked
                     //add inferences to the assignment
                     Map<Integer,Integer> result = backtracking(partialSolution);
@@ -196,7 +218,7 @@ public class ConstraintSatisfactionProblem {
                 }
             }
             //not consistent remove {var, value} and inferences from partialSolution
-            revertChanges(varID, partialSolution, removed);
+            jumpBack(varID, partialSolution, removed);
         }
         return null;
     }
@@ -208,7 +230,7 @@ public class ConstraintSatisfactionProblem {
      * @param partialSolution partial solution
      * @param removed set of the variables that were removed from the variablesMap by inference along with their domain
      */
-    private void revertChanges(Integer varID, Map<Integer, Integer> partialSolution, HashMap<Integer, Set<Integer>> removed){
+    private void jumpBack(Integer varID, Map<Integer, Integer> partialSolution, HashMap<Integer, Set<Integer>> removed){
         //remove the {var, value} from partialSolutions
         if(partialSolution.containsKey(varID)) {
             partialSolution.remove(varID);
@@ -230,6 +252,7 @@ public class ConstraintSatisfactionProblem {
     private boolean isConsistent(Integer varID1, Integer value1, Map<Integer, Integer> assignment){
         boolean result = true;
         for(Integer varID2 : assignment.keySet()){
+            incrementConstraintCheck();
             Pair<Integer, Integer> IDpair = new Pair<>(varID1, varID2);
             Pair<Integer, Integer> valuePair = new Pair<>(value1, assignment.get(varID2));
             if(constraintMap.containsKey(IDpair)){ //if there exist an arc between IDpair
@@ -264,9 +287,8 @@ public class ConstraintSatisfactionProblem {
      */
     private boolean inference(Integer varID, Map<Integer, Integer> partialSolution, Map<Integer, Set<Integer>> removed) {
         //find the neighbors of varID that are still unassigned
-        ArrayList<Integer> unassignedNeighbors = new ArrayList<Integer>();
+        ArrayList<Integer> unassignedNeighbors = new ArrayList<>();
         for(Integer neighbor : neighborMap.get(varID)){
-//            System.out.println("Hi");
             if(!partialSolution.containsKey(neighbor)){ // if not part of the partial solution (means unassigned)
                 unassignedNeighbors.add(neighbor);
             }
@@ -388,9 +410,11 @@ public class ConstraintSatisfactionProblem {
         //create nodeList
         List<OrderNode> nodes = new ArrayList<>();
 
-        List<Integer> values = new ArrayList<>(variablesMap.get(var));//make a list from the var's domain (for consistent order)
-        for(Integer val1: values){//for each value in the domain of the given variable --> var
+        for(Integer val1: variablesMap.get(var)){//for each value in the domain of the given variable --> var
             OrderNode n = new OrderNode(val1,0);//make a OrderNode for the val1 with score of 0
+            if(!neighborMap.containsKey(var)){
+                continue;
+            }
             for(Integer neighborID : neighborMap.get(var)){ //for each neighbor of the given variable
                 if(!partialSolution.containsKey(neighborID)){ //if the neighbor is not yet assigned
                     for(Integer val2 : variablesMap.get(neighborID)){// for all the values in the neighbor's domain
@@ -465,14 +489,7 @@ public class ConstraintSatisfactionProblem {
         }
         return var;
     }
-    
-    /**
-     * Backjumping
-     * Conflict-directed-backjumping
-     * @param partialSolution
-     */
-    private void jumpBack(Map<Integer, Integer> partialSolution) {
-    }
+
 
     public static void main(String[] args){
         //==============================

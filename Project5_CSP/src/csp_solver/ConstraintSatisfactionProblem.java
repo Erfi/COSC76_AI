@@ -182,7 +182,7 @@ public class ConstraintSatisfactionProblem {
             return partialSolution;
         }
         Integer varID = FakeSelectUnasignedVariable(partialSolution);
-        for(Integer value : FakeOrderDomainValues(varID, partialSolution)){
+        for(Integer value : orderDomainValues(varID, partialSolution)){
             HashMap<Integer, Set<Integer>> removed = new HashMap<>();//as backup
             if(isConsistent(varID, value, partialSolution)){
                 partialSolution.put(varID, value);
@@ -196,12 +196,19 @@ public class ConstraintSatisfactionProblem {
                 }
             }
             //not consistent remove {var, value} and inferences from partialSolution
-            revertChanges(varID, value, partialSolution, removed);
+            revertChanges(varID, partialSolution, removed);
         }
         return null;
     }
 
-    private void revertChanges(Integer varID, Integer value, Map<Integer, Integer> partialSolution, HashMap<Integer, Set<Integer>> removed){
+    /**
+     * Auxilary method to remove the {varID = value} from the partial solution
+     * along with reverting the changes made by inference (changes are in the "removed" set)
+     * @param varID variable to remove from partial solution
+     * @param partialSolution partial solution
+     * @param removed set of the variables that were removed from the variablesMap by inference along with their domain
+     */
+    private void revertChanges(Integer varID, Map<Integer, Integer> partialSolution, HashMap<Integer, Set<Integer>> removed){
         //remove the {var, value} from partialSolutions
         if(partialSolution.containsKey(varID)) {
             partialSolution.remove(varID);
@@ -264,7 +271,6 @@ public class ConstraintSatisfactionProblem {
                 unassignedNeighbors.add(neighbor);
             }
         }
-
         //pass unassigned neighbors list to the MAC-3 algorithm
         return MAC_3(varID, unassignedNeighbors, removed);
     }
@@ -336,6 +342,41 @@ public class ConstraintSatisfactionProblem {
         }
     }
 
+    //================================
+    //============OrderNode===========
+    //================================
+    /**
+     * This is an auxilary class for Look_ahead value ordering
+     * function --> orderDomainValues()
+     */
+    private class OrderNode implements Comparable<OrderNode>{
+        Integer value;
+        Integer score;
+
+        public OrderNode(Integer v, Integer s){
+            value = v;
+            score = s;
+        }
+
+        private void incrementScore(){
+            score++;
+        }
+
+        @Override
+        public int compareTo(OrderNode other){
+            return score - other.score;
+        }
+
+        @Override
+        public String toString(){
+            return "{"+value+":"+score+"}";
+        }
+    }
+    //================================
+    //=====END OF OrderNode class=====
+    //================================
+
+
     /**
      * Look-ahead value ordering
      * Pick the least constraining value (min-conflicts)
@@ -343,8 +384,36 @@ public class ConstraintSatisfactionProblem {
      * @param partialSolution  the partial solution
      * @return an order of values in var's domain
      */
-    private Iterable<Integer> orderDomainValues(Integer var, Map<Integer, Integer> partialSolution) {
-        return null;
+    private Iterable<Integer> orderDomainValues(Integer var, Map<Integer, Integer> partialSolution){
+        //create nodeList
+        List<OrderNode> nodes = new ArrayList<>();
+
+        List<Integer> values = new ArrayList<>(variablesMap.get(var));//make a list from the var's domain (for consistent order)
+        for(Integer val1: values){//for each value in the domain of the given variable --> var
+            OrderNode n = new OrderNode(val1,0);//make a OrderNode for the val1 with score of 0
+            for(Integer neighborID : neighborMap.get(var)){ //for each neighbor of the given variable
+                if(!partialSolution.containsKey(neighborID)){ //if the neighbor is not yet assigned
+                    for(Integer val2 : variablesMap.get(neighborID)){// for all the values in the neighbor's domain
+                        //make the (val1, val2) constraint and check to see if it is satisfied
+                        if(constraintMap.get(new Pair<>(var, neighborID)).contains(new Pair<>(val1, val2))){
+                            //increase the score for val1
+                            n.incrementScore();
+                        }
+                    }
+                }
+            }
+            //add the OrderNode n to the nodes list
+            nodes.add(n);
+        }
+
+        Collections.sort(nodes);//sort the OrderNode list based on their scores
+
+        List<Integer> result = new ArrayList<>();
+        for(OrderNode n: nodes){
+            result.add(n.value);
+        }
+
+        return result;
     }
 
     /**

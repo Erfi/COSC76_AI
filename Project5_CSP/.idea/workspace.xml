@@ -25,15 +25,19 @@
       <file leaf-file-name="ConstraintSatisfactionProblem.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/csp_solver/ConstraintSatisfactionProblem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8372093">
-              <caret line="33" column="35" selection-start-line="33" selection-start-column="35" selection-end-line="33" selection-end-column="35" />
+            <state vertical-scroll-proportion="0.49473685">
+              <caret line="437" column="18" selection-start-line="437" selection-start-column="18" selection-end-line="437" selection-end-column="18" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#10307#10316#0" expanded="true" />
-                <element signature="e#14318#14319#0" expanded="true" />
-                <element signature="e#14345#14346#0" expanded="true" />
-                <element signature="e#15164#15165#0" expanded="true" />
-                <element signature="e#15189#15190#0" expanded="true" />
+                <element signature="e#10697#10706#0" expanded="true" />
+                <element signature="e#14827#14828#0" expanded="true" />
+                <element signature="e#14858#14859#0" expanded="true" />
+                <element signature="e#14924#14925#0" expanded="true" />
+                <element signature="e#14974#14975#0" expanded="true" />
+                <element signature="e#15027#15028#0" expanded="true" />
+                <element signature="e#15081#15082#0" expanded="true" />
+                <element signature="e#17825#17826#0" expanded="true" />
+                <element signature="e#17850#17851#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -43,7 +47,7 @@
         <entry file="file://$PROJECT_DIR$/src/csp_solver/Queens.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="64" column="37" selection-start-line="64" selection-start-column="37" selection-end-line="64" selection-end-column="37" />
+              <caret line="63" column="38" selection-start-line="63" selection-start-column="38" selection-end-line="63" selection-end-column="38" />
               <folding />
             </state>
           </provider>
@@ -507,7 +511,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3503546" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28652483" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1765625" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -552,14 +556,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/csp_solver/Sudoku.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="29" column="41" selection-start-line="29" selection-start-column="41" selection-end-line="29" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/javafx-src.zip!/javafx/util/Pair.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.6838996">
@@ -568,25 +564,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/csp_solver/Sudoku.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="29" column="41" selection-start-line="29" selection-start-column="41" selection-end-line="29" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/csp_solver/Queens.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="64" column="37" selection-start-line="64" selection-start-column="37" selection-end-line="64" selection-end-column="37" />
+          <caret line="63" column="38" selection-start-line="63" selection-start-column="38" selection-end-line="63" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/csp_solver/ConstraintSatisfactionProblem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8372093">
-          <caret line="33" column="35" selection-start-line="33" selection-start-column="35" selection-end-line="33" selection-end-column="35" />
+        <state vertical-scroll-proportion="0.49473685">
+          <caret line="437" column="18" selection-start-line="437" selection-start-column="18" selection-end-line="437" selection-end-column="18" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#10307#10316#0" expanded="true" />
-            <element signature="e#14318#14319#0" expanded="true" />
-            <element signature="e#14345#14346#0" expanded="true" />
-            <element signature="e#15164#15165#0" expanded="true" />
-            <element signature="e#15189#15190#0" expanded="true" />
+            <element signature="e#10697#10706#0" expanded="true" />
+            <element signature="e#14827#14828#0" expanded="true" />
+            <element signature="e#14858#14859#0" expanded="true" />
+            <element signature="e#14924#14925#0" expanded="true" />
+            <element signature="e#14974#14975#0" expanded="true" />
+            <element signature="e#15027#15028#0" expanded="true" />
+            <element signature="e#15081#15082#0" expanded="true" />
+            <element signature="e#17825#17826#0" expanded="true" />
+            <element signature="e#17850#17851#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -181,7 +181,7 @@ public class ConstraintSatisfactionProblem {
         if(isComplete(partialSolution)){
             return partialSolution;
         }
-        Integer varID = FakeSelectUnasignedVariable(partialSolution);
+        Integer varID = selectUnassignedVariable(partialSolution);
         for(Integer value : orderDomainValues(varID, partialSolution)){
             HashMap<Integer, Set<Integer>> removed = new HashMap<>();//as backup
             if(isConsistent(varID, value, partialSolution)){
@@ -435,7 +435,19 @@ public class ConstraintSatisfactionProblem {
      * @return one unassigned variable
      */
     private Integer selectUnassignedVariable(Map<Integer, Integer> partialSolution) {
-        return -1;
+        Integer var = -1;
+        int tempSize = Integer.MAX_VALUE;
+        for(Integer v : variablesMap.keySet()){//for variable v in all the variables
+            if(!partialSolution.containsKey(v)){//if v is not in the partial solutions
+                int s = variablesMap.get(v).size();
+                if(s < tempSize){
+                    var = v;
+                    tempSize = s;
+                }
+            }
+        }
+
+        return var;
     }
 
     /**

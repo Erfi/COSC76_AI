@@ -15,6 +15,7 @@ public class CircuitBoard {
     HashMap<Integer, Pair<Integer, Integer>> coordinateIDMap = new HashMap<>(); //maps an integer ID to coordinate
     HashMap<Pair<Integer, Integer>, Integer> coordinateMap = new HashMap<>(); //maps a coordinate to coordinate ID
     HashMap<Integer, ComponentNode> componenetMap = new HashMap<>();
+    HashMap<Integer, String> componentRep = new HashMap<>();//alphabetical representation of the componenets
 
     //====Component Class=====
     private class ComponentNode{
@@ -43,15 +44,19 @@ public class CircuitBoard {
 
         ComponentNode c1 = new ComponentNode(1, 3, 2, new HashSet<>());//id=1 width=3 height=2
         componenetMap.put(1,c1);
+        componentRep.put(1,"a");
         compList.add(c1);
         ComponentNode c2 = new ComponentNode(2, 5, 2, new HashSet<>());
         componenetMap.put(2,c2);
+        componentRep.put(2,"b");
         compList.add(c2);
         ComponentNode c3 = new ComponentNode(3, 2, 3, new HashSet<>());
         componenetMap.put(3,c3);
+        componentRep.put(3,"c");
         compList.add(c3);
         ComponentNode c4 = new ComponentNode(4, 7, 1, new HashSet<>());
         componenetMap.put(4,c4);
+        componentRep.put(4,"d");
         compList.add(c4);
 
         //fill the coordinateIDMap and coordinateMap (assign a number to every coordinate)

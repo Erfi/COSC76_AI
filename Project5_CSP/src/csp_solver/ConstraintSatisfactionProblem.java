@@ -122,8 +122,8 @@ public class ConstraintSatisfactionProblem {
      * Enforce consistency by AC-3, PC-3.
      */
     private boolean enforceConsistency() {
-        System.out.println(variablesMap);
-        System.out.println(constraintMap);
+//        System.out.println(variablesMap);
+//        System.out.println(constraintMap);
         boolean b = AC_3();
 //        System.out.println(b);
         return b;
@@ -448,7 +448,7 @@ public class ConstraintSatisfactionProblem {
      */
     private Iterable<Integer> FakeOrderDomainValues(Integer var, Map<Integer, Integer> partialSolution){
         ArrayList<Integer> values = new ArrayList<>(variablesMap.get(var));
-        Collections.shuffle(values);
+//        Collections.shuffle(values);
         return values;
     }
     /**

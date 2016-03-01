@@ -30,7 +30,7 @@ public class Agent {
      * Moves the robot using the given move
      * @param move A move in form of <1,0> (East)
      */
-    private void move(Pair<Integer,Integer> move){
+    protected void move(Pair<Integer,Integer> move){
         Pair<Integer, Integer> newLoc = new Pair<>((location.getKey()+move.getKey()) , (location.getValue()+move.getValue()));
         if(isValidPosition(newLoc)){//if we can move to the new location
             location = newLoc;

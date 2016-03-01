@@ -13,6 +13,8 @@ public class ReasoingProblem {
     static Pair<Integer, Integer> DOWN = new Pair<>(0,-1);
     static Pair<Integer, Integer> LEFT = new Pair<>(-1,0);
     static Pair<Integer, Integer> RIGHT = new Pair<>(1,0);
+    ArrayList<Pair<Integer, Integer>> MOVES = new ArrayList<>();
+
 
     Agent agent;
     MarkovModel model;
@@ -31,6 +33,10 @@ public class ReasoingProblem {
                 width_height,
                 colorList);
         model = new MarkovModel(mazeWorld, probMap);
+        MOVES.add(UP);
+        MOVES.add(DOWN);
+        MOVES.add(LEFT);
+        MOVES.add(RIGHT);
     }
 
     //============INITIALIZATION METHODS=============
@@ -102,11 +108,35 @@ public class ReasoingProblem {
             move in a random direction
             memorize the color
             update the probability map
+            check to see if you are in the correct location by comparing the probabilities of all squares:
+            if(agent is in the square with the highest probability)
+                then its in the correct location)
+            else
+                agent is wrong, its in a different square than it thinks it is
          */
+        int numIterations = 100;
+        for (int k=0; k<numIterations; k++){
+            //make a random move
+            Pair<Integer, Integer> move = MOVES.get(rand.nextInt(4));
+            System.out.println(move);
+            agent.move(move);
+            agent.memorize(agent.getLocationColor());//read and memorize the color
+            updateProbMap();
+            Pair<Integer, Integer> guessedLoc = getGuessedLoc();
+            System.out.println("Guessed location: " + guessedLoc + " actual location: " + agent.location);
+        }
+    }
 
-
-
-
+    private Pair<Integer, Integer> getGuessedLoc(){
+        double highestProb = 0.0;
+        Pair<Integer, Integer> guess = null;
+        for(Pair<Integer, Integer> loc : probMap.keySet()){
+            if(probMap.get(loc) > highestProb){
+                highestProb = probMap.get(loc);
+                guess = loc;
+            }
+        }
+        return guess;
     }
 
     private void updateProbMap(){

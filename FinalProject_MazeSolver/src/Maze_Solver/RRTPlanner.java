@@ -16,7 +16,9 @@ import javafx.util.Pair;
 
 public class RRTPlanner extends MotionPlanner {
     private static final double DEFAULT_DELTA = 0.1;  // Duration for the control
-    private Map<Vector, Edge> parents = null;
+    private Map<Vector, Edge> parents = null; //tree holding the graph
+    private Map<Vector, Edge> parents2 = null; //second tree for bidirectional search!
+    private double goalBias = 1.0; //using goal biased with goalBias/1 probability
 
     //=========Edge Class===========
     private class Edge{
@@ -61,13 +63,22 @@ public class RRTPlanner extends MotionPlanner {
         if(parents == null){
             parents = new HashMap<Vector, Edge>();
         }
+        if(parents2 == null){//second tree for bidirectional search
+            parents2 = new HashMap<>();
+        }
         parents.put(getStart(), new Edge(null,null));
+        parents2.put(getGoal(),new Edge(null, null));
     }
     
     @Override
     protected void growMap(int K) {
         for (int i=0 ; i<K; i++) {
-            Vector qNear = nearestNeighbor(parents.keySet(),getRobot().getRandomConfiguration(getEnvironment(), random));
+            Vector qNear;
+            if(random.nextDouble() > goalBias) {
+                qNear = nearestNeighbor(parents.keySet(), getRobot().getRandomConfiguration(getEnvironment(), random));
+            }else{
+                qNear = nearestNeighbor(parents.keySet(), getGoal());
+            }
             newConf(qNear, DEFAULT_DELTA);
         }
     }
@@ -81,9 +92,9 @@ public class RRTPlanner extends MotionPlanner {
     @SuppressWarnings("boxing")
     private boolean newConf(Vector qnear, double duration) {
         Vector newControl = getRobot().getRandomControl(random);
-        Trajectory newTrajectory = new Trajectory(newControl, DEFAULT_DELTA*5);
+        Trajectory newTrajectory = new Trajectory(newControl,duration);
         if(getEnvironment().isValidMotion(getRobot(), qnear, newTrajectory, RESOLUTION )){
-            Vector child = getRobot().move(qnear, newControl, DEFAULT_DELTA*5);
+            Vector child = getRobot().move(qnear, newControl, duration);
             if(!parents.containsKey(child)) {
                 parents.put(child, new Edge(qnear, newTrajectory));
                 return true;
@@ -134,6 +145,9 @@ public class RRTPlanner extends MotionPlanner {
     protected void reset() {
         if(parents != null){
             parents.clear();
+        }
+        if(parents2 != null){
+            parents2.clear();
         }
     }
 

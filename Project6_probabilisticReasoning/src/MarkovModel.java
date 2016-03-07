@@ -81,6 +81,7 @@ public class MarkovModel {
      * @return a double representing the probability of being in loc
      */
     protected double UpdateLocProb(Pair<Integer, Integer> loc, List<Color> memory){
-        return transition_prob(loc) * observation_prob(memory.get(0), loc);//using only the last color atm
+        double update = transition_prob(loc) * observation_prob(memory.get(0), loc);//using only the last color atm
+        return update;
     }
 }

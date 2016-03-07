@@ -118,7 +118,7 @@ public class ReasoingProblem {
         for (int k=0; k<numIterations; k++){
             //make a random move
             Pair<Integer, Integer> move = MOVES.get(rand.nextInt(4));
-            System.out.println(move);
+//            System.out.println(move);
             agent.move(move);
             agent.memorize(agent.getLocationColor());//read and memorize the color
             updateProbMap();
@@ -146,6 +146,8 @@ public class ReasoingProblem {
                 if(mazeWorld.containsKey(loc)) {
                     double newprob = model.UpdateLocProb(loc, agent.remember());
                     probMap.put(loc, newprob);//updating the probability map
+                }else{
+                    System.out.println("hey wtf?");
                 }
             }
         }
@@ -158,7 +160,9 @@ public class ReasoingProblem {
             for(int j=0; j<width_height.getValue(); j++){
                 Pair<Integer, Integer> loc = new Pair<>(i, j);
                 if(probMap.containsKey(loc)) {
-                    sumProb = probMap.get(loc);
+                    sumProb += probMap.get(loc);
+                }else{
+                    System.out.println("hey wtf?");
                 }
             }
         }
@@ -169,6 +173,8 @@ public class ReasoingProblem {
                 if(probMap.containsKey(loc)) {
                     //divide the probability of each square by sumProb
                     probMap.put(loc, probMap.get(loc)/sumProb);
+                }else{
+                    System.out.println("hey wtf?");
                 }
             }
         }

@@ -7,9 +7,12 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextBoundsType;
 import javafx.util.Duration;
 
 public class MazeView extends Group {
@@ -51,15 +54,8 @@ public class MazeView extends Group {
 				} else {
 					square.setFill(Color.LIGHTGRAY);
 				}
-				
-
-				//Text t = new Text(x, y + 12, "" + Chess.colToChar(c)
-					//	+ Chess.rowToChar(r));
 
 				this.getChildren().add(square);
-				//this.getChildren().add(t);
-
-		
 			}
 		
 		}
@@ -87,7 +83,20 @@ public class MazeView extends Group {
 		currentColor++;
 		this.getChildren().add(piece);
 		return piece;
-		
+	}
+
+	public Node addNumberedPiece(int c, int r, int number){
+		int radius = (int)(pixelsPerSquare * 0.4);
+		Circle piece = new Circle(squareCenterX(c), squareCenterY(r), radius);
+		piece.setFill(colors[3]);
+		Text text = new Text(String.valueOf(number));
+		text.setBoundsType(TextBoundsType.VISUAL);
+//		StackPane stack = new StackPane();
+//		stack.getChildren().add(piece);
+//		stack.getChildren().add(text);
+
+		this.getChildren().add(piece);
+		return piece;
 	}
 
 	// create a new piece on the board. with red color.

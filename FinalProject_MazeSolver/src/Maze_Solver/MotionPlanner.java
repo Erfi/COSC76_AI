@@ -1,4 +1,4 @@
-package assignment_motion_planning;
+package Maze_Solver;
 
 import java.util.List;
 import java.util.Map;

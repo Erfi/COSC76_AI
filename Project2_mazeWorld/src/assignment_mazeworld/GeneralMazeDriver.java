@@ -45,8 +45,8 @@ public class GeneralMazeDriver extends Application {
     private void runSearches() {
 
         //to be used with GeneralMazeProblem
-        int[][] starts = new int[][]{{5,6},{2,0},{3,1}};
-        int[][] goals = new int[][]{{0,3},{5,6},{3,6}};
+        int[][] starts = new int[][]{{0,1},{0,0},{1,0}};
+        int[][] goals = new int[][]{{0,0},{1,1},{0,1}};
 
 
         GeneralMazeProblem genMazeProblem = new GeneralMazeProblem(maze, starts , goals);
@@ -135,13 +135,10 @@ public class GeneralMazeDriver extends Application {
             lastXs = new int[numBots];
             lastYs = new int[numBots];
             for(int i=0; i<numBots; i++){
-                pieces[i] = mazeView.addPiece(firstNode.getXof(i), firstNode.getYof(i));
+                pieces[i] = mazeView.addNumberedPiece(firstNode.getXof(i), firstNode.getYof(i), i+1);
                 lastXs[i] = firstNode.getXof(i);
                 lastYs[i] = firstNode.getYof(i);
             }
-//            piece = mazeView.addPiece(firstNode.getXof(0), firstNode.getYof(0));
-//            lastX = firstNode.getXof(0);
-//            lastY = firstNode.getYof(0);
         }
 
         // try to do the next step of the animation. Do nothing if

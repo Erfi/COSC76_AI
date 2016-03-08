@@ -18,7 +18,9 @@ public class RRTPlanner extends MotionPlanner {
     private static final double DEFAULT_DELTA = 0.1;  // Duration for the control
     private Map<Vector, Edge> parents = null; //tree holding the graph
     private Map<Vector, Edge> parents2 = null; //second tree for bidirectional search!
-    private double goalBias = 1.0; //using goal biased with goalBias/1 probability
+    private double goalBias = 0.1; //using goal biased with goalBias/1 probability
+    private boolean useBidirectionalMap = false;
+    private double epsilon = 0.001;
 
     //=========Edge Class===========
     private class Edge{
@@ -72,6 +74,14 @@ public class RRTPlanner extends MotionPlanner {
     
     @Override
     protected void growMap(int K) {
+        if(useBidirectionalMap){
+            growBidirectionalMap(K);
+        }else{
+            growSingledirectionalMap(K);
+        }
+    }
+
+    private void growSingledirectionalMap(int K){
         for (int i=0 ; i<K; i++) {
             Vector qNear;
             if(random.nextDouble() > goalBias) {
@@ -79,8 +89,45 @@ public class RRTPlanner extends MotionPlanner {
             }else{
                 qNear = nearestNeighbor(parents.keySet(), getGoal());
             }
-            newConf(qNear, DEFAULT_DELTA);
+            newConf(qNear,parents, DEFAULT_DELTA);
         }
+    }
+    private void growBidirectionalMap(int K){
+        for (int i=0; i<K; i++){
+            //extent the first tree
+            Vector qn = nearestNeighbor(parents.keySet(), getRobot().getRandomConfiguration(getEnvironment(), random));
+            Vector qs = newConf(qn,parents, DEFAULT_DELTA); //returns new vertex of the first tree that we just added to
+
+            //extend the second tree toward the first tree using qs
+            Vector qn_hat = nearestNeighbor(parents2.keySet(), qs);
+            Vector qs_hat = newConf(qn_hat, parents2, DEFAULT_DELTA);
+
+            if(getRobot().getMetric(qs, qs_hat) < epsilon){//if the two newly added nodes are less than an epsilon apart
+                connectTrees(qs,parents, qs_hat, parents2);//makes a connection between tree1 and tree2
+            }
+        }
+    }
+
+    /**
+     * This is an auxillary method used by the bidirectiona search to connect two graphs when
+     * the grow too close to each other!
+     * @param qs vertex from the first tree
+     * @param tree first tree
+     * @param qs_hat vertext from the second tree
+     * @param tree_hat secong tree
+     */
+    private void connectTrees(Vector qs, Map<Vector, Edge> tree, Vector qs_hat, Map<Vector, Edge> tree_hat){
+        //make trajectory between the two vertices(make one!)
+
+        //check if that trajectory is valid (use isValidMotion)
+
+        //if the first trajectory is ok then make the second one too
+
+        //make edges out of the vertices and trajectories
+
+        //add them in both tree one and tree two correspondingly
+
+        //you can even call the findPath here if you don't want to grow the graph anymore
     }
 
     /**
@@ -90,19 +137,19 @@ public class RRTPlanner extends MotionPlanner {
      * @return true if one new configuration is inserted, and false otherwise
      */
     @SuppressWarnings("boxing")
-    private boolean newConf(Vector qnear, double duration) {
+    private Vector newConf(Vector qnear, Map<Vector, Edge> parentMap, double duration) {
         Vector newControl = getRobot().getRandomControl(random);
         Trajectory newTrajectory = new Trajectory(newControl,duration);
         if(getEnvironment().isValidMotion(getRobot(), qnear, newTrajectory, RESOLUTION )){
             Vector child = getRobot().move(qnear, newControl, duration);
-            if(!parents.containsKey(child)) {
-                parents.put(child, new Edge(qnear, newTrajectory));
-                return true;
+            if(!parentMap.containsKey(child)) {
+                parentMap.put(child, new Edge(qnear, newTrajectory));
+                return child;
             }else{
-                return false;
+                return null;
             }
         }
-        return false;
+        return null;
     }
     
     @SuppressWarnings("boxing")

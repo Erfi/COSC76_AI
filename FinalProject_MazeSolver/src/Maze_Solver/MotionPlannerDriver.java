@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 
 public class MotionPlannerDriver extends Application {
     private static final String TITLE = "CS 76 Motion Planner";
-    private static final String PLANAR_ROBOT_ENVIRONMENT = "maze_1";
+    private static final String PLANAR_ROBOT_ENVIRONMENT = "planar_robot_environment_hard";
     private static final String ROBOT_ARM_ENVIRONMENT = "robot_arm_environment_hard";
     private static final String EMPTY = "empty";
     private static final String HANOVER = "hanover";
@@ -27,7 +27,7 @@ public class MotionPlannerDriver extends Application {
         if (IS_PLANAR_ROBOT) {
             ENVIRONMENT = new Environment(PLANAR_ROBOT_ENVIRONMENT);
             START = new Vector(-4, -4, 0);
-            GOAL = new Vector(0, 0, 0);
+            GOAL = new Vector(4, 4, 0);
 //            ROBOT = PlanarRobot.getDubinsCar();
 //            ROBOT = PlanarRobot.getReedsSheppCar();
 //            ROBOT = PlanarRobot.getDifferentialDrive();

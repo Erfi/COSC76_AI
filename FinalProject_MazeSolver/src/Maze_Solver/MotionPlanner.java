@@ -20,7 +20,7 @@ public abstract class MotionPlanner {
     private Vector start;   // start configuration
     private Vector goal;    // goal configuration
     private Environment environment;  // workspace
-    private int defaultSize = 2000;  // default size of data structures
+    private int defaultSize = 10000;  // default size of data structures
     private int numberOfRandomSample = 0;
     private int numberOfFreeRandomSample = 0;
     
